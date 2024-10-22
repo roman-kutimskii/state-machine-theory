@@ -2,18 +2,23 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <unordered_map>
+#include <map>
 #include <utility>
 #include <vector>
 
 struct MealyState {
-    std::unordered_map<std::string, std::pair<std::string, std::string> > transitions;
+    std::map<std::string, std::pair<std::string, std::string> > transitions;
 };
 
-std::unordered_map<std::string, MealyState> readMealyMachine(const std::string &fileName) {
+struct MooreState {
+    std::string output;
+    std::map<std::string, std::string> transitions;
+};
+
+std::map<std::string, MealyState> readMealyMachine(const std::string &fileName) {
     std::ifstream file(fileName);
     std::string line;
-    std::unordered_map<std::string, MealyState> mealy;
+    std::map<std::string, MealyState> mealy;
     std::vector<std::string> states;
 
     getline(file, line);
@@ -42,6 +47,42 @@ std::unordered_map<std::string, MealyState> readMealyMachine(const std::string &
     return mealy;
 }
 
+std::map<std::string, MooreState> readMooreMachine(const std::string &fileName) {
+    std::ifstream file(fileName);
+    std::string outputs;
+    std::string line;
+    std::map<std::string, MooreState> moore;
+    std::vector<std::string> states;
+
+    getline(file, outputs);
+    getline(file, line);
+    std::stringstream ssOutputs(outputs);
+    std::stringstream ss(line);
+    std::string output;
+    std::string state;
+    getline(ssOutputs, output, ';');
+    getline(ss, state, ';');
+
+    while (getline(ss, state, ';')) {
+        getline(ssOutputs, output, ';');
+        states.push_back(state);
+        moore[state].output = output;
+    }
+
+    while (getline(file, line)) {
+        std::stringstream ssLine(line);
+        std::string input, transition;
+        getline(ssLine, input, ';');
+
+        for (const auto &stateName: states) {
+            getline(ssLine, transition, ';');
+            moore[stateName].transitions[input] = transition;
+        }
+    }
+
+    return moore;
+}
+
 int main(int argc, char *argv[]) {
     if (argc != 4) {
         std::cerr << "Usage: " << argv[0] << " <conversion-type> <input-file> <output-file>" << std::endl;
@@ -54,7 +95,23 @@ int main(int argc, char *argv[]) {
 
     if (conversionType == "mealy-to-moore") {
         auto mealy = readMealyMachine(inputFileName);
+        for (const auto &state: mealy) {
+            std::cout << state.first << std::endl;
+            for (const auto &transition: state.second.transitions) {
+                std::cout << transition.first << " " << transition.second.first << '/' << transition.second.second <<
+                        std::endl;
+            }
+            std::cout << std::endl;
+        }
     } else if (conversionType == "moore-to-mealy") {
+        auto moore = readMooreMachine(inputFileName);
+        for (const auto &state: moore) {
+            std::cout << state.first << " " << state.second.output << std::endl;
+            for (const auto &transition: state.second.transitions) {
+                std::cout << transition.first << " " << transition.second << std::endl;
+            }
+            std::cout << std::endl;
+        }
     } else {
         std::cerr << "Unknown conversion type: " << conversionType << std::endl;
         return 1;
