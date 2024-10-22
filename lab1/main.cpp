@@ -1,13 +1,13 @@
 #include <fstream>
 #include <iostream>
+#include <map>
 #include <sstream>
 #include <string>
-#include <map>
 #include <utility>
 #include <vector>
 
 struct MealyState {
-    std::map<std::string, std::pair<std::string, std::string> > transitions;
+    std::map<std::string, std::pair<std::string, std::string>> transitions;
 };
 
 struct MooreState {
@@ -15,7 +15,8 @@ struct MooreState {
     std::map<std::string, std::string> transitions;
 };
 
-std::map<std::string, MealyState> readMealyMachine(const std::string &fileName) {
+std::map<std::string, MealyState> readMealyMachine(const std::string& fileName)
+{
     std::ifstream file(fileName);
     std::string line;
     std::map<std::string, MealyState> mealy;
@@ -35,19 +36,20 @@ std::map<std::string, MealyState> readMealyMachine(const std::string &fileName) 
         std::string input, transition;
         getline(ssLine, input, ';');
 
-        for (const auto &stateName: states) {
+        for (const auto& stateName : states) {
             getline(ssLine, transition, ';');
             size_t slashPos = transition.find('/');
             std::string nextState = transition.substr(0, slashPos);
             std::string output = transition.substr(slashPos + 1, transition.size());
-            mealy[stateName].transitions[input] = {nextState, output};
+            mealy[stateName].transitions[input] = { nextState, output };
         }
     }
 
     return mealy;
 }
 
-std::map<std::string, MooreState> readMooreMachine(const std::string &fileName) {
+std::map<std::string, MooreState> readMooreMachine(const std::string& fileName)
+{
     std::ifstream file(fileName);
     std::string outputs;
     std::string line;
@@ -74,7 +76,7 @@ std::map<std::string, MooreState> readMooreMachine(const std::string &fileName) 
         std::string input, transition;
         getline(ssLine, input, ';');
 
-        for (const auto &stateName: states) {
+        for (const auto& stateName : states) {
             getline(ssLine, transition, ';');
             moore[stateName].transitions[input] = transition;
         }
@@ -83,7 +85,8 @@ std::map<std::string, MooreState> readMooreMachine(const std::string &fileName) 
     return moore;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[])
+{
     if (argc != 4) {
         std::cerr << "Usage: " << argv[0] << " <conversion-type> <input-file> <output-file>" << std::endl;
         return 1;
@@ -95,19 +98,19 @@ int main(int argc, char *argv[]) {
 
     if (conversionType == "mealy-to-moore") {
         auto mealy = readMealyMachine(inputFileName);
-        for (const auto &state: mealy) {
+        for (const auto& state : mealy) {
             std::cout << state.first << std::endl;
-            for (const auto &transition: state.second.transitions) {
-                std::cout << transition.first << " " << transition.second.first << '/' << transition.second.second <<
-                        std::endl;
+            for (const auto& transition : state.second.transitions) {
+                std::cout << transition.first << " " << transition.second.first << "/" << transition.second.second
+                          << std::endl;
             }
             std::cout << std::endl;
         }
     } else if (conversionType == "moore-to-mealy") {
         auto moore = readMooreMachine(inputFileName);
-        for (const auto &state: moore) {
+        for (const auto& state : moore) {
             std::cout << state.first << " " << state.second.output << std::endl;
-            for (const auto &transition: state.second.transitions) {
+            for (const auto& transition : state.second.transitions) {
                 std::cout << transition.first << " " << transition.second << std::endl;
             }
             std::cout << std::endl;
