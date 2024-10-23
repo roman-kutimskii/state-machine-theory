@@ -85,6 +85,38 @@ std::map<std::string, MooreState> readMooreMachine(const std::string& fileName)
     return moore;
 }
 
+void writeMooreMachine(const std::map<std::string, MooreState>& moore, const std::string& fileName)
+{
+    std::ofstream file(fileName);
+
+    file << ";";
+    for (const auto& state : moore) {
+        file << state.second.output << ";";
+    }
+    file << std::endl;
+
+    file << ";";
+    for (const auto& state : moore) {
+        file << state.first << ";";
+    }
+    file << std::endl;
+
+    std::map<std::string, std::vector<std::string>> transitions;
+    for (const auto& state : moore) {
+        for (const auto& transition : state.second.transitions) {
+            transitions[transition.first].push_back(transition.second);
+        }
+    }
+
+    for (const auto& transition : transitions) {
+        file << transition.first << ";";
+        for (const auto& state : transition.second) {
+            file << state << ";";
+        }
+        file << std::endl;
+    }
+}
+
 int main(int argc, char* argv[])
 {
     if (argc != 4) {
@@ -108,13 +140,7 @@ int main(int argc, char* argv[])
         }
     } else if (conversionType == "moore-to-mealy") {
         auto moore = readMooreMachine(inputFileName);
-        for (const auto& state : moore) {
-            std::cout << state.first << " " << state.second.output << std::endl;
-            for (const auto& transition : state.second.transitions) {
-                std::cout << transition.first << " " << transition.second << std::endl;
-            }
-            std::cout << std::endl;
-        }
+        writeMooreMachine(moore, outputFileName);
     } else {
         std::cerr << "Unknown conversion type: " << conversionType << std::endl;
         return 1;
