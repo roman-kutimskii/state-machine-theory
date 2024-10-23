@@ -227,13 +227,28 @@ std::unordered_map<std::string, MooreState> mealyToMoore(const std::unordered_ma
                 size_t pos = mooreState.find('_');
                 std::string sub = mooreState.substr(0, pos);
                 if (sub == state.first) {
-                    moore[mooreState].transitions[transition.first] = transition.second.first + "_" + transition.second.second;
+                    moore[mooreState].transitions[transition.first]
+                        = transition.second.first + "_" + transition.second.second;
                 }
             }
         }
     }
 
     return moore;
+}
+
+std::unordered_map<std::string, MealyState> mooreToMealy(const std::unordered_map<std::string, MooreState>& moore)
+{
+    std::unordered_map<std::string, MealyState> mealy;
+
+    for (const auto& state : moore) {
+        for (const auto& transition : state.second.transitions) {
+            mealy[state.first].transitions[transition.first]
+                = { transition.second, moore.at(transition.second).output };
+        }
+    }
+
+    return mealy;
 }
 
 int main(int argc, char* argv[])
@@ -257,7 +272,8 @@ int main(int argc, char* argv[])
         std::string startState;
         auto moore = readMooreMachine(inputFileName, startState);
         removeUnreachableStatesMoore(moore, startState);
-        writeMooreMachine(moore, outputFileName);
+        auto mealy = mooreToMealy(moore);
+        writeMealyMachine(mealy, outputFileName);
     } else {
         std::cerr << "Unknown conversion type: " << conversionType << std::endl;
         return 1;
