@@ -48,6 +48,31 @@ std::map<std::string, MealyState> readMealyMachine(const std::string& fileName)
     return mealy;
 }
 
+void writeMealyMachine(const std::map<std::string, MealyState>& mealy, std::string fileName)
+{
+    std::ofstream file(fileName);
+
+    for (const auto& state: mealy) {
+        file << ";" << state.first;
+    }
+    file << std::endl;
+
+    std::map<std::string, std::vector<std::pair<std::string, std::string>>> transitions;
+    for (const auto& state: mealy) {
+        for (const auto& transition : state.second.transitions) {
+            transitions[transition.first].push_back(std::make_pair(transition.second.first, transition.second.second));
+        }
+    }
+
+    for (const auto& transition: transitions) {
+        file << transition.first ;
+        for (const auto & state : transition.second) {
+            file << ";" << state.first << "/" << state.second;
+        }
+        file << std::endl;
+    }
+}
+
 std::map<std::string, MooreState> readMooreMachine(const std::string& fileName)
 {
     std::ifstream file(fileName);
@@ -128,14 +153,7 @@ int main(int argc, char* argv[])
 
     if (conversionType == "mealy-to-moore") {
         auto mealy = readMealyMachine(inputFileName);
-        for (const auto& state : mealy) {
-            std::cout << state.first << std::endl;
-            for (const auto& transition : state.second.transitions) {
-                std::cout << transition.first << " " << transition.second.first << "/" << transition.second.second
-                          << std::endl;
-            }
-            std::cout << std::endl;
-        }
+        writeMealyMachine(mealy, outputFileName);
     } else if (conversionType == "moore-to-mealy") {
         auto moore = readMooreMachine(inputFileName);
         writeMooreMachine(moore, outputFileName);
