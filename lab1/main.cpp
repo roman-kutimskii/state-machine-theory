@@ -56,8 +56,7 @@ std::unordered_map<std::string, MealyState> readMealyMachine(const std::string& 
 void writeMealyMachine(const std::unordered_map<std::string, MealyState>& mealy, const std::string& fileName)
 {
     std::vector<std::pair<std::string, MealyState>> machine(mealy.begin(), mealy.end());
-    std::sort(machine.begin(), machine.end(),
-        [](const auto& left, const auto& right) { return left.first < right.first; });
+    std::ranges::sort(machine, [](const auto& left, const auto& right) { return left.first < right.first; });
     std::ofstream file(fileName);
 
     for (const auto& state : machine) {
@@ -123,8 +122,7 @@ std::unordered_map<std::string, MooreState> readMooreMachine(const std::string& 
 void writeMooreMachine(const std::unordered_map<std::string, MooreState>& moore, const std::string& fileName)
 {
     std::vector<std::pair<std::string, MooreState>> machine(moore.begin(), moore.end());
-    std::sort(machine.begin(), machine.end(),
-        [](const auto& left, const auto& right) { return left.first < right.first; });
+    std::ranges::sort(machine, [](const auto& left, const auto& right) { return left.first < right.first; });
     std::ofstream file(fileName);
 
     for (const auto& state : machine) {
