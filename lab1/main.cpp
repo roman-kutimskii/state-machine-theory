@@ -48,7 +48,7 @@ std::map<std::string, MealyState> readMealyMachine(const std::string& fileName)
     return mealy;
 }
 
-void writeMealyMachine(const std::map<std::string, MealyState>& mealy, std::string fileName)
+void writeMealyMachine(const std::map<std::string, MealyState>& mealy, const std::string& fileName)
 {
     std::ofstream file(fileName);
 
@@ -60,7 +60,7 @@ void writeMealyMachine(const std::map<std::string, MealyState>& mealy, std::stri
     std::map<std::string, std::vector<std::pair<std::string, std::string>>> transitions;
     for (const auto& state: mealy) {
         for (const auto& transition : state.second.transitions) {
-            transitions[transition.first].push_back(std::make_pair(transition.second.first, transition.second.second));
+            transitions[transition.first].emplace_back(transition.second.first, transition.second.second);
         }
     }
 
