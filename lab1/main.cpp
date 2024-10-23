@@ -89,15 +89,13 @@ void writeMooreMachine(const std::map<std::string, MooreState>& moore, const std
 {
     std::ofstream file(fileName);
 
-    file << ";";
     for (const auto& state : moore) {
-        file << state.second.output << ";";
+        file << ";" << state.second.output;
     }
     file << std::endl;
 
-    file << ";";
     for (const auto& state : moore) {
-        file << state.first << ";";
+        file << ";" << state.first;
     }
     file << std::endl;
 
@@ -109,9 +107,9 @@ void writeMooreMachine(const std::map<std::string, MooreState>& moore, const std
     }
 
     for (const auto& transition : transitions) {
-        file << transition.first << ";";
+        file << transition.first;
         for (const auto& state : transition.second) {
-            file << state << ";";
+            file << ";" << state;
         }
         file << std::endl;
     }
