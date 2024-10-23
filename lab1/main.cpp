@@ -156,6 +156,32 @@ void writeMooreMachine(const std::unordered_map<std::string, MooreState>& moore,
     }
 }
 
+void removeUnreachableStatesMealy(std::unordered_map<std::string, MealyState>& mealy, const std::string& startState)
+{
+    std::unordered_set<std::string> reachable;
+    std::vector<std::string> toVisit = { startState };
+
+    while (!toVisit.empty()) {
+        std::string current = toVisit.back();
+        toVisit.pop_back();
+        if (reachable.contains(current))
+            continue;
+        reachable.insert(current);
+
+        for (const auto& transition : mealy[current].transitions) {
+            toVisit.push_back(transition.second.first);
+        }
+    }
+
+    for (auto it = mealy.begin(); it != mealy.end();) {
+        if (!reachable.contains(it->first)) {
+            it = mealy.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
 void removeUnreachableStatesMoore(std::unordered_map<std::string, MooreState>& moore, const std::string& startState)
 {
     std::unordered_set<std::string> reachable;
@@ -224,7 +250,7 @@ int main(int argc, char* argv[])
     if (conversionType == "mealy-to-moore") {
         std::string startState;
         auto mealy = readMealyMachine(inputFileName, startState);
-        // removeUnreachableStatesMealy(mealy, startState);
+        removeUnreachableStatesMealy(mealy, startState);
         auto moore = mealyToMoore(mealy);
         writeMooreMachine(moore, outputFileName);
     } else if (conversionType == "moore-to-mealy") {
