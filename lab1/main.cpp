@@ -3,6 +3,7 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -52,21 +53,21 @@ void writeMealyMachine(const std::map<std::string, MealyState>& mealy, const std
 {
     std::ofstream file(fileName);
 
-    for (const auto& state: mealy) {
+    for (const auto& state : mealy) {
         file << ";" << state.first;
     }
     file << std::endl;
 
     std::map<std::string, std::vector<std::pair<std::string, std::string>>> transitions;
-    for (const auto& state: mealy) {
+    for (const auto& state : mealy) {
         for (const auto& transition : state.second.transitions) {
             transitions[transition.first].emplace_back(transition.second.first, transition.second.second);
         }
     }
 
-    for (const auto& transition: transitions) {
-        file << transition.first ;
-        for (const auto & state : transition.second) {
+    for (const auto& transition : transitions) {
+        file << transition.first;
+        for (const auto& state : transition.second) {
             file << ";" << state.first << "/" << state.second;
         }
         file << std::endl;
@@ -140,6 +141,33 @@ void writeMooreMachine(const std::map<std::string, MooreState>& moore, const std
     }
 }
 
+void removeUnreachableStatesMoore(std::map<std::string, MooreState>& moore)
+{
+    std::string startState = moore.begin()->first;
+    std::unordered_set<std::string> reachable;
+    std::vector<std::string> toVisit = { startState };
+
+    while (!toVisit.empty()) {
+        std::string current = toVisit.back();
+        toVisit.pop_back();
+        if (reachable.contains(current))
+            continue;
+        reachable.insert(current);
+
+        for (const auto& transition : moore[current].transitions) {
+            toVisit.push_back(transition.second);
+        }
+    }
+
+    for (auto it = moore.begin(); it != moore.end();) {
+        if (!reachable.contains(it->first)) {
+            it = moore.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
 int main(int argc, char* argv[])
 {
     if (argc != 4) {
@@ -156,6 +184,7 @@ int main(int argc, char* argv[])
         writeMealyMachine(mealy, outputFileName);
     } else if (conversionType == "moore-to-mealy") {
         auto moore = readMooreMachine(inputFileName);
+        removeUnreachableStatesMoore(moore);
         writeMooreMachine(moore, outputFileName);
     } else {
         std::cerr << "Unknown conversion type: " << conversionType << std::endl;
