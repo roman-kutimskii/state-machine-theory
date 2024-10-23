@@ -123,6 +123,11 @@ void writeMooreMachine(const std::unordered_map<std::string, MooreState>& moore,
 {
     std::vector<std::pair<std::string, MooreState>> machine(moore.begin(), moore.end());
     std::ranges::sort(machine, [](const auto& left, const auto& right) { return left.first < right.first; });
+    std::unordered_map<std::string, std::string> states;
+    int k = 0;
+    for (const auto& state : machine) {
+        states[state.first] = "R" + std::to_string(k++);
+    }
     std::ofstream file(fileName);
 
     for (const auto& state : machine) {
@@ -131,7 +136,7 @@ void writeMooreMachine(const std::unordered_map<std::string, MooreState>& moore,
     file << std::endl;
 
     for (const auto& state : machine) {
-        file << ";" << state.first;
+        file << ";" << states[state.first];
     }
     file << std::endl;
 
@@ -145,7 +150,7 @@ void writeMooreMachine(const std::unordered_map<std::string, MooreState>& moore,
     for (const auto& transition : transitions) {
         file << transition.first;
         for (const auto& state : transition.second) {
-            file << ";" << state;
+            file << ";" << states[state];
         }
         file << std::endl;
     }
@@ -177,6 +182,34 @@ void removeUnreachableStatesMoore(std::unordered_map<std::string, MooreState>& m
     }
 }
 
+std::unordered_map<std::string, MooreState> mealyToMoore(const std::unordered_map<std::string, MealyState>& mealy)
+{
+    std::unordered_map<std::string, MooreState> moore;
+    std::vector<std::string> states;
+
+    for (const auto& state : mealy) {
+        for (const auto& transition : state.second.transitions) {
+            std::string newState = transition.second.first + "_" + transition.second.second;
+            states.push_back(newState);
+            moore[newState].output = transition.second.second;
+        }
+    }
+
+    for (const auto& state : mealy) {
+        for (const auto& transition : state.second.transitions) {
+            for (const auto& mooreState : states) {
+                size_t pos = mooreState.find('_');
+                std::string sub = mooreState.substr(0, pos);
+                if (sub == state.first) {
+                    moore[mooreState].transitions[transition.first] = transition.second.first + "_" + transition.second.second;
+                }
+            }
+        }
+    }
+
+    return moore;
+}
+
 int main(int argc, char* argv[])
 {
     if (argc != 4) {
@@ -191,8 +224,9 @@ int main(int argc, char* argv[])
     if (conversionType == "mealy-to-moore") {
         std::string startState;
         auto mealy = readMealyMachine(inputFileName, startState);
-        std::cout << startState;
-        writeMealyMachine(mealy, outputFileName);
+        // removeUnreachableStatesMealy(mealy, startState);
+        auto moore = mealyToMoore(mealy);
+        writeMooreMachine(moore, outputFileName);
     } else if (conversionType == "moore-to-mealy") {
         std::string startState;
         auto moore = readMooreMachine(inputFileName, startState);
