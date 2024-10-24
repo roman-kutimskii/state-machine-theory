@@ -55,17 +55,15 @@ std::unordered_map<std::string, MealyState> readMealyMachine(const std::string& 
 
 void writeMealyMachine(const std::unordered_map<std::string, MealyState>& mealy, const std::string& fileName)
 {
-    std::vector<std::pair<std::string, MealyState>> machine(mealy.begin(), mealy.end());
-    std::ranges::sort(machine, [](const auto& left, const auto& right) { return left.first < right.first; });
     std::ofstream file(fileName);
 
-    for (const auto& state : machine) {
+    for (const auto& state : mealy) {
         file << ";" << state.first;
     }
     file << std::endl;
 
     std::map<std::string, std::vector<std::pair<std::string, std::string>>> transitions;
-    for (const auto& state : machine) {
+    for (const auto& state : mealy) {
         for (const auto& transition : state.second.transitions) {
             transitions[transition.first].emplace_back(transition.second.first, transition.second.second);
         }
@@ -121,27 +119,20 @@ std::unordered_map<std::string, MooreState> readMooreMachine(const std::string& 
 
 void writeMooreMachine(const std::unordered_map<std::string, MooreState>& moore, const std::string& fileName)
 {
-    std::vector<std::pair<std::string, MooreState>> machine(moore.begin(), moore.end());
-    std::ranges::sort(machine, [](const auto& left, const auto& right) { return left.first < right.first; });
-    std::unordered_map<std::string, std::string> states;
-    int k = 0;
-    for (const auto& state : machine) {
-        states[state.first] = "R" + std::to_string(k++);
-    }
     std::ofstream file(fileName);
 
-    for (const auto& state : machine) {
+    for (const auto& state : moore) {
         file << ";" << state.second.output;
     }
     file << std::endl;
 
-    for (const auto& state : machine) {
-        file << ";" << states[state.first];
+    for (const auto& state : moore) {
+        file << ";" << state.first;
     }
     file << std::endl;
 
     std::map<std::string, std::vector<std::string>> transitions;
-    for (const auto& state : machine) {
+    for (const auto& state : moore) {
         for (const auto& transition : state.second.transitions) {
             transitions[transition.first].push_back(transition.second);
         }
@@ -150,7 +141,7 @@ void writeMooreMachine(const std::unordered_map<std::string, MooreState>& moore,
     for (const auto& transition : transitions) {
         file << transition.first;
         for (const auto& state : transition.second) {
-            file << ";" << states[state];
+            file << ";" << state;
         }
         file << std::endl;
     }
