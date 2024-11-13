@@ -1,21 +1,19 @@
-#include <algorithm>
 #include <fstream>
 #include <iostream>
-#include <map>
+#include <unordered_map>
 #include <sstream>
 #include <string>
-#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 
 struct MealyState {
-    std::map<std::string, std::pair<std::string, std::string>> transitions;
+    std::unordered_map<std::string, std::pair<std::string, std::string>> transitions;
 };
 
 struct MooreState {
     std::string output;
-    std::map<std::string, std::string> transitions;
+    std::unordered_map<std::string, std::string> transitions;
 };
 
 std::unordered_map<std::string, MealyState> readMealyMachine(const std::string& fileName, std::string& startState)
@@ -62,7 +60,7 @@ void writeMealyMachine(const std::unordered_map<std::string, MealyState>& mealy,
     }
     file << std::endl;
 
-    std::map<std::string, std::vector<std::pair<std::string, std::string>>> transitions;
+    std::unordered_map<std::string, std::vector<std::pair<std::string, std::string>>> transitions;
     for (const auto& state : mealy) {
         for (const auto& transition : state.second.transitions) {
             transitions[transition.first].emplace_back(transition.second.first, transition.second.second);
@@ -131,7 +129,7 @@ void writeMooreMachine(const std::unordered_map<std::string, MooreState>& moore,
     }
     file << std::endl;
 
-    std::map<std::string, std::vector<std::string>> transitions;
+    std::unordered_map<std::string, std::vector<std::string>> transitions;
     for (const auto& state : moore) {
         for (const auto& transition : state.second.transitions) {
             transitions[transition.first].push_back(transition.second);
@@ -150,7 +148,7 @@ void writeMooreMachine(const std::unordered_map<std::string, MooreState>& moore,
 void removeUnreachableStatesMealy(std::unordered_map<std::string, MealyState>& mealy, const std::string& startState)
 {
     std::unordered_set<std::string> reachable;
-    std::vector<std::string> toVisit = { startState };
+    std::vector toVisit = { startState };
 
     while (!toVisit.empty()) {
         std::string current = toVisit.back();
@@ -176,7 +174,7 @@ void removeUnreachableStatesMealy(std::unordered_map<std::string, MealyState>& m
 void removeUnreachableStatesMoore(std::unordered_map<std::string, MooreState>& moore, const std::string& startState)
 {
     std::unordered_set<std::string> reachable;
-    std::vector<std::string> toVisit = { startState };
+    std::vector toVisit = { startState };
 
     while (!toVisit.empty()) {
         std::string current = toVisit.back();
