@@ -1,5 +1,5 @@
-#ifndef STATE_MACHINE_H
-#define STATE_MACHINE_H
+#ifndef STATE_MACHINE_UTILS_H
+#define STATE_MACHINE_UTILS_H
 
 #include <fstream>
 #include <sstream>
@@ -203,4 +203,4 @@ inline void removeUnreachableStatesMoore(
     }
 }
 
-#endif // STATE_MACHINE_H
+#endif // STATE_MACHINE_UTILS_H
