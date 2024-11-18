@@ -11,15 +11,16 @@
 
 struct MealyState {
     std::unordered_map<std::string, std::pair<std::string, std::string>> transitions;
+    bool isInitial = false;
 };
 
 struct MooreState {
     std::string output;
     std::unordered_map<std::string, std::string> transitions;
+    bool isInitial = false;
 };
 
-inline std::unordered_map<std::string, MealyState> readMealyMachine(
-    const std::string& fileName, std::string& startState)
+inline std::unordered_map<std::string, MealyState> readMealyMachine(const std::string& fileName)
 {
     std::ifstream file(fileName);
     std::string line;
@@ -35,7 +36,7 @@ inline std::unordered_map<std::string, MealyState> readMealyMachine(
         states.push_back(state);
     }
 
-    startState = states.front();
+    mealy[states.front()].isInitial = true;
 
     while (getline(file, line)) {
         std::stringstream ssLine(line);
@@ -79,8 +80,7 @@ inline void writeMealyMachine(const std::unordered_map<std::string, MealyState>&
     }
 }
 
-inline std::unordered_map<std::string, MooreState> readMooreMachine(
-    const std::string& fileName, std::string& startState)
+inline std::unordered_map<std::string, MooreState> readMooreMachine(const std::string& fileName)
 {
     std::ifstream file(fileName);
     std::string outputs;
@@ -103,7 +103,7 @@ inline std::unordered_map<std::string, MooreState> readMooreMachine(
         moore[state].output = output;
     }
 
-    startState = states.front();
+    moore[states.front()].isInitial = true;
 
     while (getline(file, line)) {
         std::stringstream ssLine(line);
@@ -149,11 +149,17 @@ inline void writeMooreMachine(const std::unordered_map<std::string, MooreState>&
     }
 }
 
-inline void removeUnreachableStatesMealy(
-    std::unordered_map<std::string, MealyState>& mealy, const std::string& startState)
+inline void removeUnreachableStatesMealy(std::unordered_map<std::string, MealyState>& mealy)
 {
     std::unordered_set<std::string> reachable;
-    std::vector toVisit = { startState };
+    std::vector<std::string> toVisit;
+
+    for (const auto& state : mealy) {
+        if (state.second.isInitial) {
+            toVisit.push_back(state.first);
+            break;
+        }
+    }
 
     while (!toVisit.empty()) {
         std::string current = toVisit.back();
@@ -176,11 +182,17 @@ inline void removeUnreachableStatesMealy(
     }
 }
 
-inline void removeUnreachableStatesMoore(
-    std::unordered_map<std::string, MooreState>& moore, const std::string& startState)
+inline void removeUnreachableStatesMoore(std::unordered_map<std::string, MooreState>& moore)
 {
     std::unordered_set<std::string> reachable;
-    std::vector toVisit = { startState };
+    std::vector<std::string> toVisit;
+
+    for (const auto& state : moore) {
+        if (state.second.isInitial) {
+            toVisit.push_back(state.first);
+            break;
+        }
+    }
 
     while (!toVisit.empty()) {
         std::string current = toVisit.back();

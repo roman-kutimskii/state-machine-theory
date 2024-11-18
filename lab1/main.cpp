@@ -57,15 +57,13 @@ int main(int argc, char* argv[])
     std::string outputFileName = argv[3];
 
     if (conversionType == "mealy-to-moore") {
-        std::string startState;
-        auto mealy = readMealyMachine(inputFileName, startState);
-        removeUnreachableStatesMealy(mealy, startState);
+        auto mealy = readMealyMachine(inputFileName);
+        removeUnreachableStatesMealy(mealy);
         auto moore = mealyToMoore(mealy);
         writeMooreMachine(moore, outputFileName);
     } else if (conversionType == "moore-to-mealy") {
-        std::string startState;
-        auto moore = readMooreMachine(inputFileName, startState);
-        removeUnreachableStatesMoore(moore, startState);
+        auto moore = readMooreMachine(inputFileName);
+        removeUnreachableStatesMoore(moore);
         auto mealy = mooreToMealy(moore);
         writeMealyMachine(mealy, outputFileName);
     } else {
