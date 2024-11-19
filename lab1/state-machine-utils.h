@@ -1,6 +1,7 @@
 #ifndef STATE_MACHINE_UTILS_H
 #define STATE_MACHINE_UTILS_H
 
+#include <algorithm>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -57,24 +58,51 @@ inline std::unordered_map<std::string, MealyState> readMealyMachine(const std::s
 
 inline void writeMealyMachine(const std::unordered_map<std::string, MealyState>& mealy, const std::string& fileName)
 {
-    std::ofstream file(fileName);
+    std::vector<std::string> states;
+    std::string initialState;
 
     for (const auto& state : mealy) {
-        file << ";" << state.first;
+        if (state.second.isInitial) {
+            initialState = state.first;
+        }
+        states.push_back(state.first);
     }
-    file << std::endl;
+
+    if (!initialState.empty()) {
+        states.erase(std::ranges::remove(states, initialState).begin(), states.end());
+        states.insert(states.begin(), initialState);
+    }
+
+    std::vector<std::vector<std::string>> table;
+
+    std::vector<std::string> header = { "" };
+    header.insert(header.end(), states.begin(), states.end());
+    table.push_back(header);
 
     std::unordered_map<std::string, std::vector<std::pair<std::string, std::string>>> transitions;
-    for (const auto& state : mealy) {
-        for (const auto& transition : state.second.transitions) {
+    for (const auto& stateName : states) {
+        auto state = mealy.at(stateName);
+        for (const auto& transition : state.transitions) {
             transitions[transition.first].emplace_back(transition.second.first, transition.second.second);
         }
     }
 
     for (const auto& transition : transitions) {
-        file << transition.first;
+        std::vector<std::string> row;
+        row.push_back(transition.first);
         for (const auto& state : transition.second) {
-            file << ";" << state.first << "/" << state.second;
+            row.push_back(state.first + "/" + state.second);
+        }
+        table.push_back(row);
+    }
+
+    std::ofstream file(fileName);
+    for (const auto& row : table) {
+        for (size_t i = 0; i < row.size(); ++i) {
+            file << row[i];
+            if (i < row.size() - 1) {
+                file << ";";
+            }
         }
         file << std::endl;
     }
