@@ -149,29 +149,57 @@ inline std::unordered_map<std::string, MooreState> readMooreMachine(const std::s
 
 inline void writeMooreMachine(const std::unordered_map<std::string, MooreState>& moore, const std::string& fileName)
 {
-    std::ofstream file(fileName);
+    std::vector<std::string> states;
+    std::string initialState;
 
     for (const auto& state : moore) {
-        file << ";" << state.second.output;
+        if (state.second.isInitial) {
+            initialState = state.first;
+        }
+        states.push_back(state.first);
     }
-    file << std::endl;
 
-    for (const auto& state : moore) {
-        file << ";" << state.first;
+    if (!initialState.empty()) {
+        states.erase(std::ranges::remove(states, initialState).begin(), states.end());
+        states.insert(states.begin(), initialState);
     }
-    file << std::endl;
+
+    std::vector<std::vector<std::string>> table;
+
+    std::vector<std::string> outputRow = { "" };
+    for (const auto& state : states) {
+        outputRow.push_back(moore.at(state).output);
+    }
+    table.push_back(outputRow);
+
+    std::vector<std::string> stateRow = { "" };
+    stateRow.insert(stateRow.end(), states.begin(), states.end());
+    table.push_back(stateRow);
 
     std::unordered_map<std::string, std::vector<std::string>> transitions;
-    for (const auto& state : moore) {
-        for (const auto& transition : state.second.transitions) {
+    for (const auto& stateName : states) {
+        const auto& state = moore.at(stateName);
+        for (const auto& transition : state.transitions) {
             transitions[transition.first].push_back(transition.second);
         }
     }
 
     for (const auto& transition : transitions) {
-        file << transition.first;
+        std::vector<std::string> row;
+        row.push_back(transition.first);
         for (const auto& state : transition.second) {
-            file << ";" << state;
+            row.push_back(state);
+        }
+        table.push_back(row);
+    }
+
+    std::ofstream file(fileName);
+    for (const auto& row : table) {
+        for (size_t i = 0; i < row.size(); ++i) {
+            file << row[i];
+            if (i < row.size() - 1) {
+                file << ";";
+            }
         }
         file << std::endl;
     }
