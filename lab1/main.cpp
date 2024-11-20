@@ -6,12 +6,17 @@ std::unordered_map<std::string, MooreState> mealyToMoore(const std::unordered_ma
 {
     std::unordered_map<std::string, MooreState> moore;
     std::vector<std::string> states;
+    bool firstSet = false;
 
     for (const auto& state : mealy) {
         for (const auto& transition : state.second.transitions) {
             std::string newState = transition.second.first + "_" + transition.second.second;
             states.push_back(newState);
             moore[newState].output = transition.second.second;
+            if (mealy.at(transition.second.first).isInitial && !firstSet) {
+                moore.at(newState).isInitial = true;
+                firstSet = true;
+            }
         }
     }
 
@@ -34,11 +39,16 @@ std::unordered_map<std::string, MooreState> mealyToMoore(const std::unordered_ma
 std::unordered_map<std::string, MealyState> mooreToMealy(const std::unordered_map<std::string, MooreState>& moore)
 {
     std::unordered_map<std::string, MealyState> mealy;
+    bool firstSet = false;
 
     for (const auto& state : moore) {
         for (const auto& transition : state.second.transitions) {
             mealy[state.first].transitions[transition.first]
                 = { transition.second, moore.at(transition.second).output };
+            if (state.second.isInitial && !firstSet) {
+                mealy.at(state.first).isInitial = true;
+                firstSet = true;
+            }
         }
     }
 
