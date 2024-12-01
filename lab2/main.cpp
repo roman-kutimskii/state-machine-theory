@@ -6,78 +6,51 @@ std::unordered_map<std::string, MealyState> minimizeMealy(std::unordered_map<std
 {
     removeUnreachableStatesMealy(mealy);
 
-    std::unordered_map<std::string, std::map<std::string, std::string>> a;
+    std::unordered_map<std::string, std::map<std::string, std::string>> transitionMap;
 
     for (auto& [state, stateInfo] : mealy) {
         for (auto& [input, transition] : stateInfo.transitions) {
-            a[state][input] = transition.second;
+            transitionMap[state][input] = transition.second;
         }
     }
 
-    std::unordered_map<std::string, std::string> b;
+    std::unordered_map<std::string, std::string> outputMap;
+    std::unordered_map<std::string, std::vector<std::string>> equivalenceClasses;
+    bool changed = true;
 
-    for (auto& [state, info] : a) {
-        b[state] = "";
-        for (auto& [_, output] : info) {
-            b[state] += output;
+    while (changed) {
+        for (auto& [state, info] : transitionMap) {
+            for (auto& [_, output] : info) {
+                outputMap[state] += output;
+            }
         }
-    }
 
-    for (auto& [state, stateInfo] : mealy) {
-        for (auto& [input, transition] : stateInfo.transitions) {
-            a[state][input] = b[transition.first];
+        for (auto& [state, stateInfo] : mealy) {
+            for (auto& [input, transition] : stateInfo.transitions) {
+                transitionMap[state][input] = outputMap[transition.first];
+            }
         }
-    }
 
-    for (auto& [state, info] : a) {
-        for (auto& [input, output] : info) {
-            b[state] += output;
+        std::unordered_map<std::string, std::vector<std::string>> newEquivalenceClasses;
+        for (auto& [state, info] : outputMap) {
+            newEquivalenceClasses[info].push_back(state);
         }
-    }
-
-    for (auto& [state, stateInfo] : mealy) {
-        for (auto& [input, transition] : stateInfo.transitions) {
-            a[state][input] = b[transition.first];
-        }
-    }
-
-    for (auto& [state, info] : a) {
-        for (auto& [input, output] : info) {
-            b[state] += output;
-        }
-    }
-
-    for (auto& [state, stateInfo] : mealy) {
-        for (auto& [input, transition] : stateInfo.transitions) {
-            a[state][input] = b[transition.first];
-        }
-    }
-
-    for (auto& [state, info] : a) {
-        for (auto& [input, output] : info) {
-            b[state] += output;
-        }
-    }
-
-    std::unordered_map<std::string, std::vector<std::string>> c;
-
-    for (auto& [state, info] : b) {
-        c[info].push_back(state);
+        changed = newEquivalenceClasses.size() != equivalenceClasses.size();
+        equivalenceClasses = newEquivalenceClasses;
     }
 
     std::unordered_map<std::string, MealyState> minimized;
-    for (auto& [eqClass, states] : c) {
-        minimized[eqClass] = {};
+    for (auto& [eqClass, states] : equivalenceClasses) {
+        MealyState newState;
+        newState.isInitial
+            = std::ranges::any_of(states, [&](const std::string& state) { return mealy[state].isInitial; });
         for (const auto& state : states) {
-            if (!minimized[eqClass].isInitial) {
-                minimized[eqClass].isInitial = mealy[state].isInitial;
+            const auto transitions = mealy[state].transitions;
+            for (const auto& [input, transition] : transitions) {
+                newState.transitions[input] = { outputMap[transition.first], transition.second };
             }
         }
-        auto state = states[0];
-        auto transitions = mealy[state].transitions;
-        for (const auto& [input, transition] : transitions) {
-            minimized[eqClass].transitions[input] = {b[transition.first],transition.second};
-        }
+        minimized[eqClass] = newState;
     }
 
     return minimized;
