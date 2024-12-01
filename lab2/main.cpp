@@ -2,6 +2,8 @@
 
 #include "state-machine-utils.h"
 
+#include <iostream>
+
 std::unordered_map<std::string, MealyState> minimizeMealy(std::unordered_map<std::string, MealyState>& mealy)
 {
     removeUnreachableStatesMealy(mealy);
@@ -56,10 +58,30 @@ std::unordered_map<std::string, MealyState> minimizeMealy(std::unordered_map<std
     return minimized;
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-    auto mealy = readMealyMachine("mealy.csv");
-    const auto minimized = minimizeMealy(mealy);
-    writeMealyMachine(minimized, "output.csv");
+    if (argc != 4) {
+        std::cerr << "Usage: " << argv[0] << " <mahine-type> <input-file> <output-file>" << std::endl;
+        return 1;
+    }
+
+    std::string machineType = argv[1];
+    std::string inputFileName = argv[2];
+    std::string outputFileName = argv[3];
+
+    if (machineType == "mealy") {
+        auto mealy = readMealyMachine(inputFileName);
+        removeUnreachableStatesMealy(mealy);
+        const auto minimized = minimizeMealy(mealy);
+        writeMealyMachine(minimized, outputFileName);
+    } else if (machineType == "moore") {
+        auto moore = readMooreMachine(inputFileName);
+        removeUnreachableStatesMoore(moore);
+        writeMooreMachine(moore, outputFileName);
+    } else {
+        std::cerr << "Unknown machine type: " << machineType << std::endl;
+        return 1;
+    }
+
     return 0;
 }
