@@ -3,4 +3,4 @@ project(lab3)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(lab3 main.cpp state-machine-utils.h)
+add_executable(lab3 main.cpp)
