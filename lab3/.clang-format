@@ -1,0 +1,7 @@
+# Generated from CLion C/C++ Code Style settings
+---
+Language: Cpp
+BasedOnStyle: WebKit
+ColumnLimit: 120
+InsertNewlineAtEOF: true
+...
