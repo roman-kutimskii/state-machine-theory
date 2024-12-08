@@ -5,7 +5,9 @@ import sys
 def read_file_to_string(file_path):
     try:
         with open(file_path, "r", encoding="utf-8") as file:
-            return file.read()
+            file_content = file.read()
+            first_line = file_content.split("\n")[0].strip('|')
+            return file_content, first_line
     except IOError as e:
         raise RuntimeError(f"Unable to open file: {file_path}") from e
 
@@ -111,9 +113,25 @@ def generate_csv(grammar, output_file_name, initial_state="H"):
             output_file.write(';'.join(row) + "\n")
 
 
+def get_parser(text):
+    pattern = re.compile(
+        r"^\s*<(\w+)>\s*->\s*([\wε](?:\s+<\w+>)?(?:\s*\|\s*[\wε](?:\s+<\w+>)?)*)\s*$",
+        re.MULTILINE
+    )
+    if re.search(pattern, text):
+        return parse_right_hand_grammar
+    pattern = re.compile(
+        r"^\s*<(\w+)>\s*->\s*((?:<\w+>\s+)?[\wε](?:\s*\|\s*(?:<\w+>\s+)?[\wε])*)\s*$",
+        re.MULTILINE
+    )
+    if re.search(pattern, text):
+        return parse_left_hand_grammar
+    return parse_right_hand_grammar
+
+
 def process_grammar(input_file_name, output_file_name):
-    file_content = read_file_to_string(input_file_name)
-    grammar, initial_state = parse_left_hand_grammar(file_content)
+    file_content, first_line = read_file_to_string(input_file_name)
+    grammar, initial_state = get_parser(first_line)(file_content)
     generate_csv(grammar, output_file_name, initial_state)
 
 
