@@ -1,4 +1,3 @@
-import pprint
 import re
 import sys
 
@@ -7,74 +6,79 @@ def read_file_to_string(file_path):
     try:
         with open(file_path, "r", encoding="utf-8") as file:
             return file.read()
-    except IOError:
-        raise RuntimeError(f"Unable to open file: {file_path}")
+    except IOError as e:
+        raise RuntimeError(f"Unable to open file: {file_path}") from e
 
 
-def read_grammar(file_name, output_file_name):
-    file_content = read_file_to_string(file_name)
-    regex = re.compile(r"^\s*<(\w+)>\s*->\s*((?:<\w+>\s+)?[\wε](?:\s*\|\s*(?:<\w+>\s+)?[\wε])*)\s*$", re.MULTILINE)
-    transition_regex = re.compile(r"^\s*(?:<(\w*)>)?\s*([\wε]*)\s*$")
-    finite_state = None
+def parse_left_hand_grammar(file_content):
+    grammar_pattern = re.compile(
+        r"^\s*<(\w+)>\s*->\s*((?:<\w+>\s+)?[\wε](?:\s*\|\s*(?:<\w+>\s+)?[\wε])*)\s*$",
+        re.MULTILINE
+    )
+    transition_pattern = re.compile(r"^\s*(?:<(\w*)>)?\s*([\wε]*)\s*$")
 
     grammar = {}
+    finite_state = None
 
-    for grammar_match in regex.finditer(file_content):
-        next_state = grammar_match.group(1)
-        finite_state = finite_state if finite_state else next_state
-        if grammar.get(next_state, None) is None:
-            grammar[next_state] = {
-                "is_finite": "F" if next_state == finite_state else "",
+    for match in grammar_pattern.finditer(file_content):
+        state = match.group(1)
+        finite_state = finite_state or state
+        transitions = match.group(2).split("|")
+
+        if state not in grammar:
+            grammar[state] = {
+                "is_finite": "F" if state == finite_state else "",
                 "transitions": {}
             }
-        transitions = grammar_match.group(2).split("|")
+
         for transition in transitions:
-            transition_match = transition_regex.search(transition)
-            symbol = transition_match.group(2)
-            state = transition_match.group(1) if transition_match.group(1) is not None else "H"
-            if grammar.get(state, None) is None:
-                grammar[state] = {
-                    "is_finite": "F" if state == finite_state else "",
-                    "transitions": {symbol: [next_state]}
+            trans_match = transition_pattern.search(transition)
+            symbol = trans_match.group(2)
+            next_state = trans_match.group(1) or "H"
+
+            if next_state not in grammar:
+                grammar[next_state] = {
+                    "is_finite": "F" if next_state == finite_state else "",
+                    "transitions": {symbol: [state]}
                 }
             else:
-                if grammar.get(state).get("transitions").get(symbol, None) is None:
-                    grammar.get(state).get("transitions")[symbol] = [next_state]
+                if symbol not in grammar[next_state]["transitions"]:
+                    grammar[next_state]["transitions"][symbol] = [state]
                 else:
-                    grammar.get(state).get("transitions").get(symbol).append(next_state)
+                    grammar[next_state]["transitions"][symbol].append(state)
 
+    return grammar
+
+
+def generate_csv(grammar, output_file_name):
     states = ['H'] + [state for state in grammar if state != 'H']
-    symbols = set()
-
-    for state in grammar:
-        for symbol in grammar[state]['transitions']:
-            symbols.add(symbol)
-
-    symbols = sorted(symbols)
+    symbols = sorted({symbol for state in grammar for symbol in grammar[state]['transitions']})
 
     csv_header1 = [''] + ['F' if grammar[state]['is_finite'] == 'F' else '' for state in states]
     csv_header2 = [''] + [f'q{i}' for i in range(len(states))]
-
-    csv_rows = []
     state_index_map = {state: f'q{i}' for i, state in enumerate(states)}
 
+    csv_rows = []
     for symbol in symbols:
         row = [''] * (len(states) + 1)
         row[0] = symbol
         for state in states:
             state_index = states.index(state) + 1
-            for next_state in grammar[state]['transitions'].get(symbol, []):
-                if row[state_index]:
-                    row[state_index] += "," + state_index_map[next_state]
-                else:
-                    row[state_index] = state_index_map[next_state]
+            transitions = grammar[state]['transitions'].get(symbol, [])
+            row[state_index] = ",".join(state_index_map[next_state] for next_state in transitions)
         csv_rows.append(row)
 
     with open(output_file_name, "w", encoding="utf-8") as output_file:
-        output_file.write(';'.join(csv_header1)+"\n")
-        output_file.write(';'.join(csv_header2)+"\n")
+        output_file.write(';'.join(csv_header1) + "\n")
+        output_file.write(';'.join(csv_header2) + "\n")
         for row in csv_rows:
-            output_file.write(';'.join(row)+"\n")
+            output_file.write(';'.join(row) + "\n")
+
+
+def process_grammar(input_file_name, output_file_name):
+    file_content = read_file_to_string(input_file_name)
+    grammar = parse_left_hand_grammar(file_content)
+    generate_csv(grammar, output_file_name)
 
 
 def main():
@@ -85,7 +89,11 @@ def main():
     input_file_name = sys.argv[1]
     output_file_name = sys.argv[2]
 
-    read_grammar(input_file_name, output_file_name)
+    try:
+        process_grammar(input_file_name, output_file_name)
+    except RuntimeError as e:
+        print(e)
+        return 1
 
     return 0
 
