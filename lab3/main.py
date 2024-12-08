@@ -126,7 +126,7 @@ def get_parser(text):
     )
     if re.search(pattern, text):
         return parse_left_hand_grammar
-    return parse_right_hand_grammar
+    return parse_left_hand_grammar
 
 
 def process_grammar(input_file_name, output_file_name):
