@@ -10,6 +10,42 @@ def read_file_to_string(file_path):
         raise RuntimeError(f"Unable to open file: {file_path}") from e
 
 
+def parse_right_hand_grammar(file_content):
+    grammar_pattern = re.compile(
+        r"^\s*<(\w+)>\s*->\s*([\wε](?:\s+<\w+>)?(?:\s*\|\s*[\wε](?:\s+<\w+>)?)*)\s*$",
+        re.MULTILINE
+    )
+    transition_pattern = re.compile(r"^\s*([\wε]*)\s*(?:<(\w*)>)?\s*$")
+
+    grammar = {}
+    initial_state = None
+
+    for match in grammar_pattern.finditer(file_content):
+        state = match.group(1)
+        initial_state = initial_state or state
+        transitions = match.group(2).split("|")
+
+        grammar["H"] = {"is_finite": "F", "transitions": {}}
+
+        for transition in transitions:
+            trans_match = transition_pattern.search(transition)
+            symbol = trans_match.group(1)
+            next_state = trans_match.group(2) or "H"
+
+            if state not in grammar:
+                grammar[state] = {
+                    "is_finite": "",
+                    "transitions": {symbol: [next_state]}
+                }
+            else:
+                if symbol not in grammar[state]["transitions"]:
+                    grammar[state]["transitions"][symbol] = [next_state]
+                else:
+                    grammar[state]["transitions"][symbol].append(next_state)
+
+    return grammar, initial_state
+
+
 def parse_left_hand_grammar(file_content):
     grammar_pattern = re.compile(
         r"^\s*<(\w+)>\s*->\s*((?:<\w+>\s+)?[\wε](?:\s*\|\s*(?:<\w+>\s+)?[\wε])*)\s*$",
@@ -47,11 +83,11 @@ def parse_left_hand_grammar(file_content):
                 else:
                     grammar[next_state]["transitions"][symbol].append(state)
 
-    return grammar
+    return grammar, "H"
 
 
-def generate_csv(grammar, output_file_name):
-    states = ['H'] + [state for state in grammar if state != 'H']
+def generate_csv(grammar, output_file_name, initial_state="H"):
+    states = [initial_state] + [state for state in grammar if state != initial_state]
     symbols = sorted({symbol for state in grammar for symbol in grammar[state]['transitions']})
 
     csv_header1 = [''] + ['F' if grammar[state]['is_finite'] == 'F' else '' for state in states]
@@ -77,8 +113,8 @@ def generate_csv(grammar, output_file_name):
 
 def process_grammar(input_file_name, output_file_name):
     file_content = read_file_to_string(input_file_name)
-    grammar = parse_left_hand_grammar(file_content)
-    generate_csv(grammar, output_file_name)
+    grammar, initial_state = parse_left_hand_grammar(file_content)
+    generate_csv(grammar, output_file_name, initial_state)
 
 
 def main():
