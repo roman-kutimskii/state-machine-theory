@@ -5,7 +5,7 @@ import sys
 def read_machine_from_file(file_path):
     finite_state = None
     states = []
-    transitions = {}
+    machine = {}
     with open(file_path, newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter=';')
         finite_markers = next(reader)[1:]
@@ -14,17 +14,21 @@ def read_machine_from_file(file_path):
         for row in reader:
             symbol = row[0]
             for i in range(1, len(row)):
-                if states[i-1] not in transitions:
-                    transitions[states[i-1]] = {}
-                if symbol not in transitions[states[i-1]]:
-                    transitions[states[i-1]][symbol] = []
-                transitions.get(states[i-1], {}).get(symbol, []).append(row[i])
+                state = states[i - 1]
+                if state not in machine:
+                    machine[state] = {
+                        "is_finite": state == finite_state,
+                        "transitions": {}
+                    }
+                if symbol not in machine[state]["transitions"]:
+                    machine[state]["transitions"][symbol] = []
+                machine.get(state)["transitions"].get(symbol).append(row[i])
 
-    return finite_state, states, transitions
+    return states[0], machine
 
 
 def process_machine(input_file_name, output_file_name):
-    read_machine_from_file(input_file_name)
+    initial_state, machine = read_machine_from_file(input_file_name)
 
 
 def main():
