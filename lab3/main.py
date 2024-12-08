@@ -118,20 +118,21 @@ def get_parser(text):
         r"^\s*<(\w+)>\s*->\s*([\wε](?:\s+<\w+>)?(?:\s*\|\s*[\wε](?:\s+<\w+>)?)*)\s*$",
         re.MULTILINE
     )
-    if re.search(pattern, text):
+    if len(re.findall(pattern, text)) == text.count('->'):
         return parse_right_hand_grammar
     pattern = re.compile(
         r"^\s*<(\w+)>\s*->\s*((?:<\w+>\s+)?[\wε](?:\s*\|\s*(?:<\w+>\s+)?[\wε])*)\s*$",
         re.MULTILINE
     )
-    if re.search(pattern, text):
+    if len(re.findall(pattern, text)) == text.count('->'):
         return parse_left_hand_grammar
     return parse_left_hand_grammar
 
 
 def process_grammar(input_file_name, output_file_name):
     file_content, first_line = read_file_to_string(input_file_name)
-    grammar, initial_state = get_parser(first_line)(file_content)
+    parser = get_parser(file_content)
+    grammar, initial_state = parser(file_content)
     generate_csv(grammar, output_file_name, initial_state)
 
 
