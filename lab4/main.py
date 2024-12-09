@@ -1,4 +1,5 @@
 import csv
+import pprint
 import sys
 
 
@@ -20,9 +21,9 @@ def read_machine_from_file(file_path):
                         "is_finite": state == finite_state,
                         "transitions": {}
                     }
-                machine[state]["transitions"][symbol] = row[i].split(",")
+                machine[state]["transitions"][symbol] = list(filter(lambda x: x != '', row[i].split(",")))
 
-    return states[0], machine
+    return states[0], finite_state, machine
 
 
 def fill_epsilon(machine):
@@ -48,9 +49,59 @@ def fill_epsilon(machine):
     return epsilon
 
 
+def get_dependencies(states, epsilon):
+    dependencies = set()
+
+    for state in states:
+        dependencies.add(state)
+        for transition in epsilon[state]:
+            dependencies.add(transition)
+
+    return list(dependencies)
+
+
+def find_key_with_value(dictionary, new_value):
+    for key, value in dictionary.items():
+        if tuple(sorted(value)) == tuple(sorted(new_value)):
+            return key
+
+    return None
+
+
+def create_new_machine(initial_state, finite_state, epsilon, machine):
+    s_count = 0
+    state_dependencies = {"s0": [initial_state]}
+    states = ["s0"]
+    new_machine = {}
+
+    for state in states:
+        s_count += 1
+
+        new_machine[state] = {
+            "is_finite": finite_state in get_dependencies(state_dependencies[state], epsilon),
+            "transitions": {}
+        }
+
+        for symbol in filter(lambda x: x != "ε", machine[initial_state]["transitions"]):
+            transitions = []
+            for dependency in get_dependencies(state_dependencies[state], epsilon):
+                transitions.extend(machine[dependency]["transitions"][symbol])
+            transitions = list(set(transitions))
+            key = find_key_with_value(state_dependencies, transitions)
+            if key is None:
+                key = f"s{s_count}"
+                states.append(key)
+                state_dependencies[key] = transitions
+            new_machine[state]["transitions"][symbol] = key
+
+    return new_machine
+
+
 def process_machine(input_file_name, output_file_name):
-    initial_state, machine = read_machine_from_file(input_file_name)
+    initial_state, finite_state, machine = read_machine_from_file(input_file_name)
     epsilon = fill_epsilon(machine)
+    new_machine = create_new_machine(initial_state, finite_state, epsilon, machine)
+    pprint.pprint(new_machine)
 
 
 def main():
