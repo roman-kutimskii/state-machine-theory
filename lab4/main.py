@@ -76,8 +76,6 @@ def create_new_machine(initial_state, finite_state, epsilon, machine):
     new_machine = {}
 
     for state in states:
-        s_count += 1
-
         new_machine[state] = {
             "is_finite": finite_state in get_dependencies(state_dependencies[state], epsilon),
             "transitions": {}
@@ -92,6 +90,7 @@ def create_new_machine(initial_state, finite_state, epsilon, machine):
             if len(transitions) != 0:
                 key = find_key_with_value(state_dependencies, transitions)
             if key is None:
+                s_count += 1
                 key = f"s{s_count}"
                 states.append(key)
                 state_dependencies[key] = transitions
