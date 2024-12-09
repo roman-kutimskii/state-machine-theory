@@ -1,5 +1,4 @@
 import csv
-import pprint
 import sys
 
 
@@ -97,11 +96,36 @@ def create_new_machine(initial_state, finite_state, epsilon, machine):
     return new_machine
 
 
+def write_machine(machine, file_path):
+    symbols = set()
+    for state in machine:
+        transitions = machine[state]["transitions"]
+        for symbol in transitions:
+            symbols.add(symbol)
+
+    finite_markers = [""]
+    for state in machine:
+        marker = machine[state]["is_finite"]
+        finite_markers.append("F" if marker else "")
+
+    states = [""] + [state for state in machine]
+
+    with open(file_path, "w", newline="", encoding="utf-8") as csvfile:
+        writer = csv.writer(csvfile, delimiter=";")
+        writer.writerow(finite_markers)
+        writer.writerow(states)
+        for symbol in symbols:
+            row = [symbol]
+            for state in states[1:]:
+                row.append(machine[state]["transitions"][symbol])
+            writer.writerow(row)
+
+
 def process_machine(input_file_name, output_file_name):
     initial_state, finite_state, machine = read_machine_from_file(input_file_name)
     epsilon = fill_epsilon(machine)
     new_machine = create_new_machine(initial_state, finite_state, epsilon, machine)
-    pprint.pprint(new_machine)
+    write_machine(new_machine, output_file_name)
 
 
 def main():
