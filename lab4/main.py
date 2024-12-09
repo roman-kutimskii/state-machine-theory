@@ -29,6 +29,8 @@ def fill_epsilon(machine):
     epsilon = {}
 
     for state in machine:
+        if "ε" not in machine[state]["transitions"]:
+            continue
         transitions = machine[state]["transitions"]["ε"]
         visited = set()
         stack = [state]
