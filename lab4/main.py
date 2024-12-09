@@ -29,9 +29,9 @@ def fill_epsilon(machine):
     epsilon = {}
 
     for state in machine:
-        if "ε" not in machine[state]["transitions"]:
-            continue
-        transitions = machine[state]["transitions"]["ε"]
+        transitions = []
+        if "ε" in machine[state]["transitions"]:
+            transitions = machine[state]["transitions"]["ε"]
         visited = set()
         stack = [state]
 
@@ -41,7 +41,7 @@ def fill_epsilon(machine):
             if vertex not in visited:
                 visited.add(vertex)
 
-                for neighbor in machine[vertex]["transitions"]["ε"]:
+                for neighbor in transitions:
                     if neighbor:
                         stack.append(neighbor)
 
