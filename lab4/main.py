@@ -88,7 +88,9 @@ def create_new_machine(initial_state, finite_state, epsilon, machine):
             for dependency in get_dependencies(state_dependencies[state], epsilon):
                 transitions.extend(machine[dependency]["transitions"][symbol])
             transitions = list(set(transitions))
-            key = find_key_with_value(state_dependencies, transitions)
+            key = ''
+            if len(transitions) != 0:
+                key = find_key_with_value(state_dependencies, transitions)
             if key is None:
                 key = f"s{s_count}"
                 states.append(key)
