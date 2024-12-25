@@ -2,26 +2,65 @@ import csv
 import sys
 
 
-def parse_regex(regex):
-    machine = {
-        'ss': {},
-        'sf': {}
-    }
+class RegexNode:
+    def __init__(self, value, left=None, right=None):
+        self.value = value
+        self.left = left
+        self.right = right
 
-    literal = regex[0]
-    machine['s0'] = {}
-    machine['ss'][literal] = 's0'
-
-    literal = regex[1]
-    machine['s1'] = {}
-    machine['s0'][literal] = 's1'
-
-    literal = regex[2]
-    machine['s1'][literal] = 'sf'
+    def __repr__(self):
+        return f"RegexNode({self.value})"
 
 
+def is_sign(token):
+    return token in "+*()|"
 
-    return machine
+
+def parse_regex(expression):
+    def parse(tokens):
+        def get_next():
+            return tokens.pop(0) if tokens else None
+
+        def parse_primary():
+            token = get_next()
+            if not is_sign(token):
+                return RegexNode(token)
+            elif token == '(':
+                node = parse_expression()
+                if get_next() != ')':
+                    raise ValueError("Mismatched parentheses")
+                return node
+            raise ValueError(f"Unexpected token: {token}")
+
+        def parse_factor():
+            node = parse_primary()
+            while tokens and tokens[0] in ('*', '+'):
+                op = get_next()
+                node = RegexNode(op, left=node)
+            return node
+
+        def parse_term():
+            node = parse_factor()
+            while tokens and tokens[0] and (not is_sign(tokens[0]) or tokens[0] == '('):
+                right = parse_factor()
+                node = RegexNode('concat', left=node, right=right)
+            return node
+
+        def parse_expression():
+            node = parse_term()
+            while tokens and tokens[0] == '|':
+                get_next()
+                right = parse_term()
+                node = RegexNode('|', left=node, right=right)
+            return node
+
+        return parse_expression()
+
+    tokens = []
+    for char in expression:
+        tokens.append(char)
+
+    return parse(tokens)
 
 
 def write_machine(machine, output_file_name):
@@ -52,9 +91,8 @@ def write_machine(machine, output_file_name):
 
 
 def process_regex(regex_pattern, output_file_name):
-    machine = parse_regex(regex_pattern)
-    write_machine(machine, output_file_name)
-
+    tree = parse_regex(regex_pattern)
+    # write_machine(machine, output_file_name)
 
 def main():
     if len(sys.argv) != 3:
