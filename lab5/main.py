@@ -32,8 +32,8 @@ class NFA:
         self.accept_state = accept_state
 
 
-def is_literal(token):
-    return token not in "+*()|" and token != "concat"
+def is_literal(value):
+    return value not in "+*()|" and value != "concat"
 
 
 def parse_regex(expression):
@@ -169,10 +169,10 @@ def print_nfa(nfa):
         visited.add(state)
         for symbol, states in state.transitions.items():
             for s in states:
-                print(f"S{state_index[state]} --{symbol}--- S{state_index[s]}")
+                print(f"    S{state_index[state]}-- {symbol} -->S{state_index[s]}")
                 print_state(s, visited, state_index)
         for s in state.epsilon_transitions:
-            print(f"S{state_index[state]} --ε--- S{state_index[s]}")
+            print(f"    S{state_index[state]}-- ε -->S{state_index[s]}")
             print_state(s, visited, state_index)
 
     state_index = {}
@@ -192,6 +192,7 @@ def print_nfa(nfa):
     assign_indices(nfa.start_state)
 
     print("NFA:")
+    print("flowchart LR")
     print_state(nfa.start_state, set(), state_index)
 
 
