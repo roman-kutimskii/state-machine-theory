@@ -161,6 +161,7 @@ def build_nfa(node):
 
     raise ValueError(f"Unexpected node value: {node.value}")
 
+
 def print_nfa(nfa):
     def print_state(state, visited, state_index):
         if state in visited:
@@ -176,6 +177,7 @@ def print_nfa(nfa):
 
     state_index = {}
     index = 0
+
     def assign_indices(state):
         nonlocal index
         if state not in state_index:
@@ -191,6 +193,7 @@ def print_nfa(nfa):
 
     print("NFA:")
     print_state(nfa.start_state, set(), state_index)
+
 
 def process_regex(regex_pattern, output_file_name):
     tree = parse_regex(regex_pattern)
