@@ -83,33 +83,6 @@ def parse_regex(expression):
     return parse(tokens)
 
 
-def write_machine(machine, output_file_name):
-    symbols = set()
-    for state in machine:
-        transitions = machine[state]
-        for symbol in transitions:
-            symbols.add(symbol)
-
-    finite_markers = [""]
-    for state in machine:
-        finite_markers.append("F" if state == "sf" else "")
-
-    states = [""] + [state for state in machine]
-
-    with open(output_file_name, "w", newline="", encoding="utf-8") as csvfile:
-        writer = csv.writer(csvfile, delimiter=";")
-        writer.writerow(finite_markers)
-        writer.writerow(states)
-        for symbol in symbols:
-            row = [symbol]
-            for state in states[1:]:
-                transition = ""
-                if symbol in machine[state]:
-                    transition = machine[state][symbol]
-                row.append(transition)
-            writer.writerow(row)
-
-
 def print_tree(node, level=0):
     if node is not None:
         print_tree(node.right, level + 1)
@@ -196,12 +169,57 @@ def print_nfa(nfa):
     print_state(nfa.start_state, set(), state_index)
 
 
+def write_nfa(nfa, output_file_name):
+    state_index = {}
+    index = 0
+
+    def assign_indices(state):
+        nonlocal index
+        if state not in state_index:
+            state_index[state] = f"S{index}"
+            index += 1
+            for symbol, states in state.transitions.items():
+                for s in states:
+                    assign_indices(s)
+            for s in state.epsilon_transitions:
+                assign_indices(s)
+
+    assign_indices(nfa.start_state)
+
+    final_state = state_index[nfa.accept_state]
+
+    transitions = {state_index[s]: {} for s in state_index}
+
+    for state, name in state_index.items():
+        for symbol, states in state.transitions.items():
+            transitions[name].setdefault(symbol, set()).update(state_index[s] for s in states)
+        for s in state.epsilon_transitions:
+            transitions[name].setdefault('ε', set()).add(state_index[s])
+
+    symbols = set()
+    for state in transitions:
+        trans = transitions[state]
+        for symbol in trans:
+            symbols.add(symbol)
+
+    with open(output_file_name, "w", newline="", encoding="utf-8") as csvfile:
+        writer = csv.writer(csvfile, delimiter=";")
+        writer.writerow([""] + ["F" if state == final_state else "" for state in state_index.values()])
+        writer.writerow([""] + [state for state in state_index.values()])
+
+        for symbol in symbols:
+            row = [symbol]
+            for state in state_index.values():
+                row.append(",".join(transitions.get(state, {}).get(symbol, {})))
+            writer.writerow(row)
+
+
 def process_regex(regex_pattern, output_file_name):
     tree = parse_regex(regex_pattern)
     # print_tree(tree)
     nfa = build_nfa(tree)
-    print_nfa(nfa)
-    # write_machine(machine, output_file_name)
+    # print_nfa(nfa)
+    write_nfa(nfa, output_file_name)
 
 
 def main():
