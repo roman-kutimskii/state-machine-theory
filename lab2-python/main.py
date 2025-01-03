@@ -1,5 +1,4 @@
 import csv
-from pprint import pprint
 import sys
 
 
@@ -40,9 +39,39 @@ def read_mealy_machine(file_name):
             symbol = row[0]
             inputs.append(symbol)
             for index in range(len(row) - 1):
-                transitions.setdefault(states[index], {})[symbol] = row[index + 1].split('/')
+                transitions.setdefault(states[index], {})[symbol] = row[index + 1].split('/') if (
+                        "/" in row[index + 1]) else []
 
     return states, inputs, transitions, initial_state
+
+
+def write_mealy_machine(file_name, states, inputs, transitions, initial_state):
+    states = [initial_state] + list(filter(lambda x: x != initial_state, states))
+    with open(file_name, 'w', newline="", encoding="utf-8") as f:
+        writer = csv.writer(f, delimiter=";")
+        writer.writerow([""] + states)
+        for symbol in inputs:
+            row = [symbol]
+            for state in states:
+                transition = transitions[state][symbol]
+                row.append(f"{transition[0]}/{transition[1]}" if transition else "")
+            writer.writerow(row)
+
+
+def write_moore_machine(file_name, states, inputs, transitions, outputs, initial_state):
+    states = [initial_state] + list(filter(lambda x: x != initial_state, states))
+    with open(file_name, 'w', newline="", encoding="utf-8") as f:
+        writer = csv.writer(f, delimiter=";")
+        outputs_row = [""]
+        for state in states:
+            outputs_row.append(outputs[state])
+        writer.writerow(outputs_row)
+        writer.writerow([""] + states)
+        for symbol in inputs:
+            row = [symbol]
+            for state in states:
+                row.append(transitions[state][symbol])
+            writer.writerow(row)
 
 
 def main():
@@ -57,9 +86,10 @@ def main():
     try:
         if machine_type == "mealy":
             values = read_mealy_machine(input_file_name)
-            pprint(values)
+            write_mealy_machine(output_file_name, *values)
         elif machine_type == "moore":
             values = read_moore_machine(input_file_name)
+            write_moore_machine(output_file_name, *values)
         else:
             print(f"Unknown machine type: {machine_type}")
             return 1
