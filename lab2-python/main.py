@@ -74,6 +74,42 @@ def write_moore_machine(file_name, states, inputs, transitions, outputs, initial
             writer.writerow(row)
 
 
+def remove_unreachable_states_mealy(states, inputs, transitions, initial_state):
+    reachable_states = set()
+    to_visit = [initial_state]
+
+    while to_visit:
+        state = to_visit.pop()
+        if state in reachable_states:
+            continue
+        reachable_states.add(state)
+
+        for symbol in transitions[state]:
+            transition = transitions[state][symbol]
+            if transition:
+                to_visit.append(transition[0])
+
+    return list(filter(lambda x: x in reachable_states, states)), inputs, transitions, initial_state
+
+
+def remove_unreachable_states_moore(states, inputs, transitions, outputs, initial_state):
+    reachable_states = set()
+    to_visit = [initial_state]
+
+    while to_visit:
+        state = to_visit.pop()
+        if state in reachable_states:
+            continue
+        reachable_states.add(state)
+
+        for symbol in transitions[state]:
+            transition = transitions[state][symbol]
+            if transition:
+                to_visit.append(transition)
+
+    return list(filter(lambda x: x in reachable_states, states)), inputs, transitions, outputs, initial_state
+
+
 def main():
     if len(sys.argv) != 4:
         print(f"Usage: {sys.argv[0]} <machine-type> <input-file> <output-file>")
@@ -86,9 +122,11 @@ def main():
     try:
         if machine_type == "mealy":
             values = read_mealy_machine(input_file_name)
+            values = remove_unreachable_states_mealy(*values)
             write_mealy_machine(output_file_name, *values)
         elif machine_type == "moore":
             values = read_moore_machine(input_file_name)
+            values = remove_unreachable_states_moore(*values)
             write_moore_machine(output_file_name, *values)
         else:
             print(f"Unknown machine type: {machine_type}")
