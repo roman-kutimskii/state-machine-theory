@@ -1,11 +1,11 @@
 import csv
-import pprint
+from pprint import pprint
 import sys
 
 
 def read_moore_machine(file_name):
     states = []
-    alphabet = []
+    inputs = []
     transitions = {}
     outputs = {}
     initial_state = None
@@ -13,18 +13,36 @@ def read_moore_machine(file_name):
     with open(file_name, 'r', newline="", encoding="utf-8") as f:
         reader = csv.reader(f, delimiter=";")
         outputs_row = list(reversed(next(reader)[1:]))
-        states_row = next(reader)[1:]
-        initial_state = states_row[0]
-        for state in states_row:
-            states.append(state)
+        states = next(reader)[1:]
+        initial_state = states[0]
+        for state in states:
             outputs[state] = outputs_row.pop()
         for row in reader:
             symbol = row[0]
-            alphabet.append(symbol)
+            inputs.append(symbol)
             for index in range(len(row) - 1):
                 transitions.setdefault(states[index], {})[symbol] = row[index + 1]
 
-    return states, alphabet, transitions, outputs, initial_state
+    return states, inputs, transitions, outputs, initial_state
+
+
+def read_mealy_machine(file_name):
+    states = []
+    inputs = []
+    transitions = {}
+    initial_state = None
+
+    with open(file_name, 'r', newline="", encoding="utf-8") as f:
+        reader = csv.reader(f, delimiter=";")
+        states = next(reader)[1:]
+        initial_state = states[0]
+        for row in reader:
+            symbol = row[0]
+            inputs.append(symbol)
+            for index in range(len(row) - 1):
+                transitions.setdefault(states[index], {})[symbol] = row[index + 1].split('/')
+
+    return states, inputs, transitions, initial_state
 
 
 def main():
@@ -38,7 +56,8 @@ def main():
 
     try:
         if machine_type == "mealy":
-            pass
+            values = read_mealy_machine(input_file_name)
+            pprint(values)
         elif machine_type == "moore":
             values = read_moore_machine(input_file_name)
         else:
