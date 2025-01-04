@@ -29,6 +29,7 @@ def read_mealy_machine(file_name):
     states = []
     input_symbols = []
     transitions = {}
+    outputs = {}
     initial_state = None
 
     with open(file_name, 'r', newline="", encoding="utf-8") as f:
@@ -39,13 +40,17 @@ def read_mealy_machine(file_name):
             symbol = row[0]
             input_symbols.append(symbol)
             for index in range(len(row) - 1):
-                transitions.setdefault(states[index], {})[symbol] = row[index + 1].split('/') if (
-                        "/" in row[index + 1]) else []
+                if "/" in row[index + 1]:
+                    state, output = row[index + 1].split('/')
+                    transitions.setdefault(states[index], {})[symbol] = state
+                    outputs.setdefault(states[index], {})[symbol] = output
+                else:
+                    transitions.setdefault(states[index], {})[symbol] = ""
+                    outputs.setdefault(states[index], {})[symbol] = ""
+    return states, input_symbols, transitions, outputs, initial_state
 
-    return states, input_symbols, transitions, initial_state
 
-
-def write_mealy_machine(file_name, states, input_symbols, transitions, initial_state):
+def write_mealy_machine(file_name, states, input_symbols, transitions, outputs, initial_state):
     states = [initial_state] + list(filter(lambda x: x != initial_state, states))
     with open(file_name, 'w', newline="", encoding="utf-8") as f:
         writer = csv.writer(f, delimiter=";")
@@ -54,7 +59,11 @@ def write_mealy_machine(file_name, states, input_symbols, transitions, initial_s
             row = [symbol]
             for state in states:
                 transition = transitions[state][symbol]
-                row.append(f"{transition[0]}/{transition[1]}" if transition else "")
+                output = outputs[state][symbol]
+                if transition and output:
+                    row.append(f"{transition}/{output}")
+                else:
+                    row.append("")
             writer.writerow(row)
 
 
@@ -74,25 +83,7 @@ def write_moore_machine(file_name, states, input_symbols, transitions, outputs, 
             writer.writerow(row)
 
 
-def remove_unreachable_states_mealy(states, input_symbols, transitions, initial_state):
-    reachable_states = set()
-    to_visit = [initial_state]
-
-    while to_visit:
-        state = to_visit.pop()
-        if state in reachable_states:
-            continue
-        reachable_states.add(state)
-
-        for symbol in transitions[state]:
-            transition = transitions[state][symbol]
-            if transition:
-                to_visit.append(transition[0])
-
-    return list(filter(lambda x: x in reachable_states, states)), input_symbols, transitions, initial_state
-
-
-def remove_unreachable_states_moore(states, input_symbols, transitions, outputs, initial_state):
+def remove_unreachable_states(states, input_symbols, transitions, outputs, initial_state):
     reachable_states = set()
     to_visit = [initial_state]
 
@@ -110,8 +101,60 @@ def remove_unreachable_states_moore(states, input_symbols, transitions, outputs,
     return list(filter(lambda x: x in reachable_states, states)), input_symbols, transitions, outputs, initial_state
 
 
-def minimize_mealy_machine(states, input_symbols, transitions, initial_state):
-    return states, input_symbols, transitions, initial_state
+def minimize_mealy_machine(states, input_symbols, transitions, outputs, initial_state):
+    output_groups = {}
+    for state in states:
+        output = ""
+        for symbol in input_symbols:
+            output += outputs[state][symbol]
+        output_groups.setdefault(output, set()).add(state)
+
+    partitions = list(output_groups.values())
+
+    def refine(partitions):
+        new_partitions = []
+        for group in partitions:
+            subgroup = {}
+            for state in group:
+                key = ""
+                for symbol in input_symbols:
+                    key += str(next((i for i, s in enumerate(partitions) if transitions[state][symbol] in s)))
+                subgroup.setdefault(key, set()).add(state)
+            new_partitions.extend(subgroup.values())
+        return new_partitions
+
+    while True:
+        new_partitions = refine(partitions)
+        if new_partitions == partitions:
+            break
+        partitions = new_partitions
+
+    state_map = {}
+    minimized_states = []
+    minimized_transitions = {}
+    minimized_outputs = {}
+
+    for i, group in enumerate(partitions):
+        new_state = f"S{i}"
+        for state in group:
+            state_map[state] = new_state
+        minimized_states.append(new_state)
+
+    for group in partitions:
+        representative = next(iter(group))
+        new_state = state_map[representative]
+        minimized_transitions[new_state] = {
+            symbol: state_map[transitions[representative][symbol]]
+            for symbol in input_symbols
+        }
+        minimized_outputs[new_state] = {
+            symbol: outputs[representative][symbol]
+            for symbol in input_symbols
+        }
+
+    minimized_initial_state = state_map[initial_state]
+
+    return minimized_states, input_symbols, minimized_transitions, minimized_outputs, minimized_initial_state
 
 
 def minimize_moore_machine(states, input_symbols, transitions, outputs, initial_state):
@@ -142,7 +185,6 @@ def minimize_moore_machine(states, input_symbols, transitions, outputs, initial_
     minimized_states = []
     minimized_transitions = {}
     minimized_outputs = {}
-    minimized_initial_state = None
 
     for i, group in enumerate(partitions):
         new_state = f"S{i}"
@@ -176,12 +218,12 @@ def main():
     try:
         if machine_type == "mealy":
             values = read_mealy_machine(input_file_name)
-            values = remove_unreachable_states_mealy(*values)
+            values = remove_unreachable_states(*values)
             values = minimize_mealy_machine(*values)
             write_mealy_machine(output_file_name, *values)
         elif machine_type == "moore":
             values = read_moore_machine(input_file_name)
-            values = remove_unreachable_states_moore(*values)
+            values = remove_unreachable_states(*values)
             values = minimize_moore_machine(*values)
             write_moore_machine(output_file_name, *values)
         else:
