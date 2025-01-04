@@ -7,8 +7,8 @@
     <option name="/Default/RiderDebugger/RiderRestoreDecompile/RestoreDecompileSetting/@EntryValue" value="false" type="bool" />
     <option name="/Default/Housekeeping/GlobalSettingsUpgraded/IsUpgraded/@EntryValue" value="true" type="bool" />
     <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexedValue" value="true" type="bool" />
-    <option name="/Default/Environment/Hierarchy/GeneratedFilesCacheKey/Timestamp/@EntryValue" value="3" type="long" />
     <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexRemoved" />
+    <option name="/Default/Environment/Hierarchy/GeneratedFilesCacheKey/Timestamp/@EntryValue" value="3" type="long" />
   </component>
   <component name="CMakePresetLoader">{
   &quot;useNewFormat&quot;: true
@@ -31,7 +31,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d0809b09-326d-474b-b44e-e6e3456efd75" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../lab2-python/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../lab2-python/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../lab2-python/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lab2-python/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -154,6 +156,7 @@
       <workItem from="1735455672711" duration="883000" />
       <workItem from="1735892563238" duration="6638000" />
       <workItem from="1735912043475" duration="4063000" />
+      <workItem from="1735975355601" duration="382000" />
     </task>
     <servers />
   </component>
