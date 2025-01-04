@@ -170,7 +170,9 @@ def minimize_moore_machine(states, input_symbols, transitions, outputs, initial_
         for group in partitions:
             subgroup = {}
             for state in group:
-                key = tuple(outputs[transitions[state][symbol]] for symbol in input_symbols)
+                key = ""
+                for symbol in input_symbols:
+                    key += str(next((i for i, s in enumerate(partitions) if transitions[state][symbol] in s)))
                 subgroup.setdefault(key, set()).add(state)
             new_partitions.extend(subgroup.values())
         return new_partitions
