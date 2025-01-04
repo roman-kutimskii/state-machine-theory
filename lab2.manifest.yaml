@@ -1,3 +1,2 @@
-dispatcher: cmake
-makeHome: lab2
-target: lab2
+dispatcher: python3.13
+script: lab2-python/main.py
