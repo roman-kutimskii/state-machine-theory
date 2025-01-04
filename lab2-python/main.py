@@ -4,7 +4,7 @@ import sys
 
 def read_moore_machine(file_name):
     states = []
-    inputs = []
+    input_symbols = []
     transitions = {}
     outputs = {}
     initial_state = None
@@ -18,16 +18,16 @@ def read_moore_machine(file_name):
             outputs[state] = outputs_row.pop()
         for row in reader:
             symbol = row[0]
-            inputs.append(symbol)
+            input_symbols.append(symbol)
             for index in range(len(row) - 1):
                 transitions.setdefault(states[index], {})[symbol] = row[index + 1]
 
-    return states, inputs, transitions, outputs, initial_state
+    return states, input_symbols, transitions, outputs, initial_state
 
 
 def read_mealy_machine(file_name):
     states = []
-    inputs = []
+    input_symbols = []
     transitions = {}
     initial_state = None
 
@@ -37,20 +37,20 @@ def read_mealy_machine(file_name):
         initial_state = states[0]
         for row in reader:
             symbol = row[0]
-            inputs.append(symbol)
+            input_symbols.append(symbol)
             for index in range(len(row) - 1):
                 transitions.setdefault(states[index], {})[symbol] = row[index + 1].split('/') if (
                         "/" in row[index + 1]) else []
 
-    return states, inputs, transitions, initial_state
+    return states, input_symbols, transitions, initial_state
 
 
-def write_mealy_machine(file_name, states, inputs, transitions, initial_state):
+def write_mealy_machine(file_name, states, input_symbols, transitions, initial_state):
     states = [initial_state] + list(filter(lambda x: x != initial_state, states))
     with open(file_name, 'w', newline="", encoding="utf-8") as f:
         writer = csv.writer(f, delimiter=";")
         writer.writerow([""] + states)
-        for symbol in inputs:
+        for symbol in input_symbols:
             row = [symbol]
             for state in states:
                 transition = transitions[state][symbol]
@@ -58,7 +58,7 @@ def write_mealy_machine(file_name, states, inputs, transitions, initial_state):
             writer.writerow(row)
 
 
-def write_moore_machine(file_name, states, inputs, transitions, outputs, initial_state):
+def write_moore_machine(file_name, states, input_symbols, transitions, outputs, initial_state):
     states = [initial_state] + list(filter(lambda x: x != initial_state, states))
     with open(file_name, 'w', newline="", encoding="utf-8") as f:
         writer = csv.writer(f, delimiter=";")
@@ -67,14 +67,14 @@ def write_moore_machine(file_name, states, inputs, transitions, outputs, initial
             outputs_row.append(outputs[state])
         writer.writerow(outputs_row)
         writer.writerow([""] + states)
-        for symbol in inputs:
+        for symbol in input_symbols:
             row = [symbol]
             for state in states:
                 row.append(transitions[state][symbol])
             writer.writerow(row)
 
 
-def remove_unreachable_states_mealy(states, inputs, transitions, initial_state):
+def remove_unreachable_states_mealy(states, input_symbols, transitions, initial_state):
     reachable_states = set()
     to_visit = [initial_state]
 
@@ -89,10 +89,10 @@ def remove_unreachable_states_mealy(states, inputs, transitions, initial_state):
             if transition:
                 to_visit.append(transition[0])
 
-    return list(filter(lambda x: x in reachable_states, states)), inputs, transitions, initial_state
+    return list(filter(lambda x: x in reachable_states, states)), input_symbols, transitions, initial_state
 
 
-def remove_unreachable_states_moore(states, inputs, transitions, outputs, initial_state):
+def remove_unreachable_states_moore(states, input_symbols, transitions, outputs, initial_state):
     reachable_states = set()
     to_visit = [initial_state]
 
@@ -107,7 +107,15 @@ def remove_unreachable_states_moore(states, inputs, transitions, outputs, initia
             if transition:
                 to_visit.append(transition)
 
-    return list(filter(lambda x: x in reachable_states, states)), inputs, transitions, outputs, initial_state
+    return list(filter(lambda x: x in reachable_states, states)), input_symbols, transitions, outputs, initial_state
+
+
+def minimize_mealy_machine(states, input_symbols, transitions, initial_state):
+    return states, input_symbols, transitions, initial_state
+
+
+def minimize_moore_machine(states, input_symbols, transitions, outputs, initial_state):
+    return states, input_symbols, transitions, outputs, initial_state
 
 
 def main():
@@ -123,10 +131,12 @@ def main():
         if machine_type == "mealy":
             values = read_mealy_machine(input_file_name)
             values = remove_unreachable_states_mealy(*values)
+            values = minimize_mealy_machine(*values)
             write_mealy_machine(output_file_name, *values)
         elif machine_type == "moore":
             values = read_moore_machine(input_file_name)
             values = remove_unreachable_states_moore(*values)
+            values = minimize_moore_machine(*values)
             write_moore_machine(output_file_name, *values)
         else:
             print(f"Unknown machine type: {machine_type}")
