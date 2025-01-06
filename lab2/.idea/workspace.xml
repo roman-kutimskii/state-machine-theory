@@ -7,8 +7,8 @@
     <option name="/Default/RiderDebugger/RiderRestoreDecompile/RestoreDecompileSetting/@EntryValue" value="false" type="bool" />
     <option name="/Default/Housekeeping/GlobalSettingsUpgraded/IsUpgraded/@EntryValue" value="true" type="bool" />
     <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexedValue" value="true" type="bool" />
-    <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexRemoved" />
     <option name="/Default/Environment/Hierarchy/GeneratedFilesCacheKey/Timestamp/@EntryValue" value="3" type="long" />
+    <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexRemoved" />
   </component>
   <component name="CMakePresetLoader">{
   &quot;useNewFormat&quot;: true
@@ -30,7 +30,14 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d0809b09-326d-474b-b44e-e6e3456efd75" name="Changes" comment="" />
+    <list default="true" id="d0809b09-326d-474b-b44e-e6e3456efd75" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../lab6/lexer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../lab6/token_type.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lab2-python/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../lab2-python/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lab2-python/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lab2-python/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lab6/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lab6/main.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -121,7 +128,7 @@
       <recent name="C:\Users\roman\CLionProjects\state-machine-theory\lab2" />
     </key>
   </component>
-  <component name="RunManager" selected="CMake Application.lab2-mealy">
+  <component name="RunManager" selected="CMake Application.lab2-moore">
     <configuration name="lab2-mealy" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="mealy mealy.csv output.csv" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" WORKING_DIR="file://$ProjectFileDir$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="lab2" TARGET_NAME="lab2" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="lab2" RUN_TARGET_NAME="lab2">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -153,6 +160,7 @@
       <workItem from="1735892563238" duration="6638000" />
       <workItem from="1735912043475" duration="4063000" />
       <workItem from="1735975355601" duration="5922000" />
+      <workItem from="1736166872090" duration="57000" />
     </task>
     <servers />
   </component>
