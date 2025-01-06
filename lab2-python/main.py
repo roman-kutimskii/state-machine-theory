@@ -163,14 +163,7 @@ def minimize_moore_machine(states, input_symbols, transitions, outputs, initial_
         output = outputs[state]
         output_groups.setdefault(output, set()).add(state)
 
-    transition_groups = {}
-    for state in states:
-        transition = ""
-        for symbol in input_symbols:
-            transition += transitions[state][symbol]
-        transition_groups.setdefault(transition, set()).add(state)
-
-    partitions = list(transition_groups.values()) if "" in outputs.values() else list(output_groups.values())
+    partitions = list(output_groups.values())
 
     def refine(partitions):
         new_partitions = []
