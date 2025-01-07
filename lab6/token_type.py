@@ -10,7 +10,7 @@ class TokenType:
         return self.name
 
 
-token_types_list = {
+token_types_map = {
     'ARRAY': TokenType('ARRAY', '(A|a)(R|r)(R|r)(A|a)(Y|y)'),
     'BEGIN': TokenType('BEGIN', '(B|b)(E|e)(G|g)(I|i)(N|n)'),
     'ELSE': TokenType('ELSE', '(E|e)(L|l)(S|s)(E|e)'),
@@ -48,6 +48,6 @@ token_types_list = {
     'FLOAT': TokenType('FLOAT', f'(ε|-){NUMBER}.{DIGIT}+'),
     'LINE_COMMENT': TokenType('LINE_COMMENT', f'//{SYMBOL}*\n'),
     'BLOCK_COMMENT': TokenType('BLOCK_COMMENT', f'{{{SYMBOL}*}}'),
-    'BAD': TokenType('BAD', f'{SYMBOL}*'),
     'SPACE': TokenType('SPACE', f' |\\n|\\t|\\r'),
+    'BAD': TokenType('BAD', f'{SYMBOL}*'),
 }

@@ -1,4 +1,3 @@
-import json
 import sys
 
 from lexer import Lexer
@@ -10,7 +9,8 @@ def process(input_file_name, output_file_name):
     lexer = Lexer(text)
     tokens = lexer.tokenize()
     with open(output_file_name, 'w') as output_file:
-        output_file.write(json.dumps(tokens, indent=4))
+        for token in tokens:
+            output_file.write(str(token))
 
 
 def main():
