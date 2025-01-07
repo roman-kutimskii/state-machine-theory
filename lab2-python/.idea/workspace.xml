@@ -5,11 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e44c29cd-e07b-4fac-a42e-49c3a1748f4f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../lab6/token.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../lab6/simulator/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../lab6/simulator/minimize.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../lab6/simulator/nfa_to_dfa.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../lab6/simulator/regex_to_nfa.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../lab6/simulator/simulator.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab5/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lab5/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../lab6/lexer.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lab6/lexer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab6/token_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lab6/token_type.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lab6/token.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lab6/lexer_token.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -140,6 +143,7 @@
       <workItem from="1736191034967" duration="622000" />
       <workItem from="1736233265810" duration="205000" />
       <workItem from="1736233828271" duration="110000" />
+      <workItem from="1736243827577" duration="902000" />
     </task>
     <servers />
   </component>
