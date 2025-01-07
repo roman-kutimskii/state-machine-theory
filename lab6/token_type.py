@@ -6,28 +6,31 @@ class TokenType:
         self.name = name
         self.regex = regex
 
+    def __repr__(self):
+        return self.name
+
 
 token_types_list = {
     'ARRAY': TokenType('ARRAY', '(A|a)(R|r)(R|r)(A|a)(Y|y)'),
-    'BEGIN': TokenType('BEGIN', 'BEGIN'),
-    'ELSE': TokenType('ELSE', 'ELSE'),
-    'END': TokenType('END', 'END'),
-    'IF': TokenType('IF', 'IF'),
-    'OF': TokenType('OF', 'OF'),
-    'OR': TokenType('OR', 'OR'),
-    'PROGRAM': TokenType('PROGRAM', 'PROGRAM'),
-    'PROCEDURE': TokenType('PROCEDURE', 'PROCEDURE'),
-    'THEN': TokenType('THEN', 'THEN'),
-    'TYPE': TokenType('TYPE', 'TYPE'),
-    'VAR': TokenType('VAR', 'VAR'),
-    'MULTIPLICATION': TokenType('MULTIPLICATION', '\*'),
-    'PLUS': TokenType('PLUS', '\+'),
+    'BEGIN': TokenType('BEGIN', '(B|b)(E|e)(G|g)(I|i)(N|n)'),
+    'ELSE': TokenType('ELSE', '(E|e)(L|l)(S|s)(E|e)'),
+    'END': TokenType('END', '(E|e)(N|n)(D|d)'),
+    'IF': TokenType('IF', '(I|i)(F|f)'),
+    'OF': TokenType('OF', '(O|o)(F|f)'),
+    'OR': TokenType('OR', '(O|o)(R|r)'),
+    'PROGRAM': TokenType('PROGRAM', '(P|p)(R|r)(O|o)(G|g)(R|r)(A|a)(M|m)'),
+    'PROCEDURE': TokenType('PROCEDURE', '(P|p)(R|r)(O|o)(C|c)(E|e)(D|d)(U|u)(R|r)(E|e)'),
+    'THEN': TokenType('THEN', '(T|t)(H|h)(E|e)(N|n)'),
+    'TYPE': TokenType('TYPE', '(T|t)(Y|y)(P|p)(E|e)'),
+    'VAR': TokenType('VAR', '(V|v)(A|a)(R|r)'),
+    'MULTIPLICATION': TokenType('MULTIPLICATION', '\\*'),
+    'PLUS': TokenType('PLUS', '\\+'),
     'MINUS': TokenType('MINUS', '-'),
     'DIVIDE': TokenType('DIVIDE', '/'),
     'SEMICOLON': TokenType('SEMICOLON', ';'),
     'COMMA': TokenType('COMMA', ','),
-    'LEFT_PAREN': TokenType('LEFT_PAREN', '\('),
-    'RIGHT_PAREN': TokenType('RIGHT_PAREN', '\)'),
+    'LEFT_PAREN': TokenType('LEFT_PAREN', '\\('),
+    'RIGHT_PAREN': TokenType('RIGHT_PAREN', '\\)'),
     'LEFT_BRACKET': TokenType('LEFT_BRACKET', '['),
     'RIGHT_BRACKET': TokenType('RIGHT_BRACKET', ']'),
     'EQ': TokenType('EQ', '='),
