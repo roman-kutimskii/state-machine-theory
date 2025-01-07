@@ -11,8 +11,8 @@ class TokenType:
 
 
 token_types_map = {
-    'LINE_COMMENT': TokenType('LINE_COMMENT', f'//({SYMBOL}| )*'),
     'BLOCK_COMMENT': TokenType('BLOCK_COMMENT', f'{{({SYMBOL}| )*}}'),
+    'LINE_COMMENT': TokenType('LINE_COMMENT', f'//({SYMBOL}| )*'),
     'ARRAY': TokenType('ARRAY', '(A|a)(R|r)(R|r)(A|a)(Y|y)'),
     'BEGIN': TokenType('BEGIN', '(B|b)(E|e)(G|g)(I|i)(N|n)'),
     'ELSE': TokenType('ELSE', '(E|e)(L|l)(S|s)(E|e)'),
