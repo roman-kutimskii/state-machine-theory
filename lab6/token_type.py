@@ -11,6 +11,8 @@ class TokenType:
 
 
 token_types_map = {
+    'LINE_COMMENT': TokenType('LINE_COMMENT', f'//({SYMBOL}| )*'),
+    'BLOCK_COMMENT': TokenType('BLOCK_COMMENT', f'{{({SYMBOL}| )*}}'),
     'ARRAY': TokenType('ARRAY', '(A|a)(R|r)(R|r)(A|a)(Y|y)'),
     'BEGIN': TokenType('BEGIN', '(B|b)(E|e)(G|g)(I|i)(N|n)'),
     'ELSE': TokenType('ELSE', '(E|e)(L|l)(S|s)(E|e)'),
@@ -39,15 +41,13 @@ token_types_map = {
     'LESS_EQ': TokenType('LESS_EQ', '<='),
     'GREATER_EQ': TokenType('GREATER_EQ', '>='),
     'NOT_EQ': TokenType('NOT_EQ', '<>'),
-    'COLON': TokenType('COLON', ':'),
     'ASSIGN': TokenType('ASSIGN', ':='),
+    'COLON': TokenType('COLON', ':'),
     'DOT': TokenType('DOT', '.'),
-    'IDENTIFIER': TokenType('IDENTIFIER', f'{LETTER}|_({SYMBOL}|_)*'),
+    'IDENTIFIER': TokenType('IDENTIFIER', f'({LETTER}|_)({SYMBOL}|_)*'),
     'STRING': TokenType('STRING', f'\'{SYMBOL}*\''),
-    'INTEGER': TokenType('INTEGER', f'(ε|-){NUMBER}'),
     'FLOAT': TokenType('FLOAT', f'(ε|-){NUMBER}.{DIGIT}+'),
-    'LINE_COMMENT': TokenType('LINE_COMMENT', f'//{SYMBOL}*\n'),
-    'BLOCK_COMMENT': TokenType('BLOCK_COMMENT', f'{{{SYMBOL}*}}'),
-    'SPACE': TokenType('SPACE', f' |\\n|\\t|\\r'),
+    'INTEGER': TokenType('INTEGER', f'(ε|-){NUMBER}'),
+    'SPACE': TokenType('SPACE', f' |\n|\t|\r'),
     'BAD': TokenType('BAD', f'{SYMBOL}*'),
 }
