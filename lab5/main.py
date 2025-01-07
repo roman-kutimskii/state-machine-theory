@@ -33,7 +33,7 @@ class NFA:
 
 
 def is_literal(value):
-    return value not in "+*()|" and value != "concat"
+    return value not in "+*()|"
 
 
 def parse_regex(expression):
@@ -43,6 +43,12 @@ def parse_regex(expression):
 
         def parse_primary():
             token = get_next()
+            if token == "\\":
+                escaped = get_next()
+                if is_literal(escaped):
+                    tokens.insert(0, escaped)
+                else:
+                    return RegexNode(escaped)
             if is_literal(token):
                 return RegexNode(token)
             elif token == "(":
@@ -55,7 +61,7 @@ def parse_regex(expression):
         def parse_factor():
             node = parse_primary()
             while tokens and tokens[0] in ("*", "+"):
-                op = get_next()
+                op = "multiply" if get_next() == "*" else "add"
                 node = RegexNode(op, left=node)
             return node
 
@@ -71,7 +77,7 @@ def parse_regex(expression):
             while tokens and tokens[0] == "|":
                 get_next()
                 right = parse_term()
-                node = RegexNode("|", left=node, right=right)
+                node = RegexNode("or", left=node, right=right)
             return node
 
         return parse_expression()
@@ -94,7 +100,7 @@ def build_nfa(node):
     if node is None:
         return None
 
-    if is_literal(node.value):
+    if node.value not in ("concat", "or", "add", "multiply"):
         start = State()
         accept = State()
         start.add_transition(node.value, accept)
@@ -104,7 +110,7 @@ def build_nfa(node):
         right_nfa = build_nfa(node.right)
         left_nfa.accept_state.add_epsilon_transition(right_nfa.start_state)
         return NFA(left_nfa.start_state, right_nfa.accept_state)
-    elif node.value == '|':
+    elif node.value == "or":
         start = State()
         accept = State()
         left_nfa = build_nfa(node.left)
@@ -114,7 +120,7 @@ def build_nfa(node):
         left_nfa.accept_state.add_epsilon_transition(accept)
         right_nfa.accept_state.add_epsilon_transition(accept)
         return NFA(start, accept)
-    elif node.value == '*':
+    elif node.value == "multiply":
         start = State()
         accept = State()
         sub_nfa = build_nfa(node.left)
@@ -123,7 +129,7 @@ def build_nfa(node):
         sub_nfa.accept_state.add_epsilon_transition(sub_nfa.start_state)
         sub_nfa.accept_state.add_epsilon_transition(accept)
         return NFA(start, accept)
-    elif node.value == '+':
+    elif node.value == "add":
         start = State()
         accept = State()
         sub_nfa = build_nfa(node.left)
@@ -194,7 +200,7 @@ def write_nfa(nfa, output_file_name):
         for symbol, states in state.transitions.items():
             transitions[name].setdefault(symbol, set()).update(state_index[s] for s in states)
         for s in state.epsilon_transitions:
-            transitions[name].setdefault('ε', set()).add(state_index[s])
+            transitions[name].setdefault("ε", set()).add(state_index[s])
 
     symbols = set()
     for state in transitions:
