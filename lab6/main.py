@@ -5,12 +5,11 @@ from lexer import Lexer
 
 def process(input_file_name, output_file_name):
     with open(input_file_name, 'r') as input_file:
-        text = input_file.readlines()
+        text = "".join(input_file.readlines())
     lexer = Lexer(text)
     tokens = lexer.tokenize()
     with open(output_file_name, 'w') as output_file:
-        for token in tokens:
-            output_file.write(str(token))
+        output_file.writelines(map(lambda x: str(x) + '\n', tokens), )
 
 
 def main():

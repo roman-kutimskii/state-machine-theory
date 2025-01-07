@@ -6,7 +6,7 @@ TOKEN_TYPES_LIST = token_types_map.values()
 
 
 class Lexer:
-    def __init__(self, text):
+    def __init__(self, text: str):
         self.text = text
         self.pos = 0
         self.tokens: list[LexerToken] = []
@@ -21,7 +21,7 @@ class Lexer:
             return False
         for token_type in TOKEN_TYPES_LIST:
             simulator = Simulator(token_type.regex)
-            result = simulator.run(self.text)
+            result = simulator.run(self.text[self.pos:])
             if result:
                 token = LexerToken(token_type.name, result, self.pos)
                 self.pos += len(result)
