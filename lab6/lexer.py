@@ -35,7 +35,8 @@ class Lexer:
                     self.column = 1
                 self.tokens.append(token)
                 return True
-        token = LexerToken(token_types_map.get("BAD"), self.text[self.pos], self.pos)
+        token = LexerToken(token_types_map.get("BAD"), self.text[self.pos], (self.line, self.column))
         self.pos += 1
         self.column += 1
         self.tokens.append(token)
+        return True
