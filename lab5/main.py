@@ -175,23 +175,29 @@ def print_nfa(nfa):
     print_state(nfa.start_state, set(), state_index)
 
 
-def write_nfa(nfa, output_file_name):
+def assign_indices(start_state):
     state_index = {}
     index = 0
+    stack = [start_state]
 
-    def assign_indices(state):
-        nonlocal index
+    while stack:
+        state = stack.pop()
         if state not in state_index:
             state_index[state] = f"S{index}"
             index += 1
             for symbol, states in state.transitions.items():
                 for s in states:
-                    assign_indices(s)
+                    if s not in state_index:
+                        stack.append(s)
             for s in state.epsilon_transitions:
-                assign_indices(s)
+                if s not in state_index:
+                    stack.append(s)
 
-    assign_indices(nfa.start_state)
+    return state_index
 
+
+def write_nfa(nfa, output_file_name):
+    state_index = assign_indices(nfa.start_state)
     final_state = state_index[nfa.accept_state]
 
     transitions = {state_index[s]: {} for s in state_index}
