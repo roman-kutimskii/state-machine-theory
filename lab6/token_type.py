@@ -46,8 +46,7 @@ token_types_map = {
     'DOT': TokenType('DOT', '.'),
     'IDENTIFIER': TokenType('IDENTIFIER', f'({LETTER}|_)({SYMBOL}|_)*'),
     'STRING': TokenType('STRING', f'\'{SYMBOL}*\''),
-    'FLOAT': TokenType('FLOAT', f'(ε|-){NUMBER}.{DIGIT}+'),
-    'INTEGER': TokenType('INTEGER', f'(ε|-){NUMBER}'),
+    'FLOAT': TokenType('FLOAT', f'{NUMBER}.{DIGIT}+'),
+    'INTEGER': TokenType('INTEGER', f'{NUMBER}'),
     'SPACE': TokenType('SPACE', f' |\n|\t|\r'),
-    'BAD': TokenType('BAD', f'{SYMBOL}*'),
 }

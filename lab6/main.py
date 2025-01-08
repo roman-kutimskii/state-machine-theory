@@ -9,7 +9,7 @@ def process(input_file_name, output_file_name):
     lexer = Lexer(text)
     tokens = lexer.tokenize()
     with open(output_file_name, 'w') as output_file:
-        output_file.writelines(map(lambda x: str(x) + '\n', tokens), )
+        output_file.writelines(map(lambda x: str(x) + '\n', tokens))
 
 
 def main():

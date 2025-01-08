@@ -2,7 +2,7 @@ from token_type import TokenType
 
 
 class LexerToken:
-    def __init__(self, lexer_type: TokenType, value: str, pos: (int, int)):
+    def __init__(self, lexer_type: str, value: str, pos: (int, int)):
         self.type = lexer_type
         self.value = value
         self.pos = pos
