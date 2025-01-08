@@ -3,28 +3,25 @@ import sys
 from lexer import Lexer
 
 
-def process(input_file_name, output_file_name):
-    with open(input_file_name, 'r') as input_file:
-        text = "".join(input_file.readlines())
-    lexer = Lexer(text)
-    tokens = lexer.tokenize()
-    with open(output_file_name, 'w') as output_file:
-        output_file.writelines(map(lambda x: str(x) + '\n', tokens))
-
-
 def main():
     if len(sys.argv) != 3:
-        print(f'Usage: {sys.argv[0]} <input-file> <output-file>')
+        print(f'Usage: python {sys.argv[0]} <input-file> <output-file>')
         return 1
 
-    input_file_name = sys.argv[1]
-    output_file_name = sys.argv[2]
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
 
-    try:
-        process(input_file_name, output_file_name)
-    except RuntimeError as e:
-        print(e)
-        return 1
+    lexer = Lexer(input_file)
+
+    with open(output_file, 'w', encoding='utf-8') as output:
+        while True:
+            token = lexer.next_token()
+            if token is None:
+                break
+            print(token)
+            output.write(str(token) + '\n')
+
+    lexer.close()
 
     return 0
 

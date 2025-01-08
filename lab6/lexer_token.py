@@ -1,6 +1,3 @@
-from token_type import TokenType
-
-
 class LexerToken:
     def __init__(self, lexer_type: str, value: str, pos: (int, int)):
         self.type = lexer_type

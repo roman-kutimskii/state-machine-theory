@@ -17,14 +17,14 @@ class Simulator:
     def run(self, text: str) -> str:
         states, input_symbols, transitions, outputs, initial_state = self.machine
 
-        result = ""
+        result = ''
         current_state = initial_state
         for symbol in text:
             if symbol not in input_symbols:
-                return result if outputs[current_state] == "F" else ""
+                return result if outputs[current_state] == 'F' else ''
             transition = transitions[current_state][symbol]
             if not transition:
-                return result if outputs[current_state] == "F" else ""
+                return result if outputs[current_state] == 'F' else ''
             result += symbol
             current_state = transition
-        return result if outputs[current_state] == "F" else ""
+        return result if outputs[current_state] == 'F' else ''

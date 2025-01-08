@@ -26,7 +26,7 @@ class NFA:
 
 
 def is_literal(value):
-    return value not in "+*()|"
+    return value not in '+*()|'
 
 
 def parse_regex(expression):
@@ -36,7 +36,7 @@ def parse_regex(expression):
 
         def parse_primary():
             token = get_next()
-            if token == "\\":
+            if token == '\\':
                 escaped = get_next()
                 if is_literal(escaped):
                     tokens.insert(0, escaped)
@@ -44,33 +44,33 @@ def parse_regex(expression):
                     return RegexNode(escaped)
             if is_literal(token):
                 return RegexNode(token)
-            elif token == "(":
+            elif token == '(':
                 node = parse_expression()
-                if get_next() != ")":
-                    raise ValueError("Mismatched parentheses")
+                if get_next() != ')':
+                    raise ValueError('Mismatched parentheses')
                 return node
-            raise ValueError(f"Unexpected token: {token}")
+            raise ValueError(f'Unexpected token: {token}')
 
         def parse_factor():
             node = parse_primary()
-            while tokens and tokens[0] in ("*", "+"):
-                op = "multiply" if get_next() == "*" else "add"
+            while tokens and tokens[0] in ('*', '+'):
+                op = 'multiply' if get_next() == '*' else 'add'
                 node = RegexNode(op, left=node)
             return node
 
         def parse_term():
             node = parse_factor()
-            while tokens and tokens[0] and (is_literal(tokens[0]) or tokens[0] == "("):
+            while tokens and tokens[0] and (is_literal(tokens[0]) or tokens[0] == '('):
                 right = parse_factor()
-                node = RegexNode("concat", left=node, right=right)
+                node = RegexNode('concat', left=node, right=right)
             return node
 
         def parse_expression():
             node = parse_term()
-            while tokens and tokens[0] == "|":
+            while tokens and tokens[0] == '|':
                 get_next()
                 right = parse_term()
-                node = RegexNode("or", left=node, right=right)
+                node = RegexNode('or', left=node, right=right)
             return node
 
         return parse_expression()
@@ -83,17 +83,17 @@ def build_nfa(node):
     if node is None:
         return None
 
-    if node.value not in ("concat", "or", "add", "multiply"):
+    if node.value not in ('concat', 'or', 'add', 'multiply'):
         start = State()
         accept = State()
         start.add_transition(node.value, accept)
         return NFA(start, accept)
-    elif node.value == "concat":
+    elif node.value == 'concat':
         left_nfa = build_nfa(node.left)
         right_nfa = build_nfa(node.right)
         left_nfa.accept_state.add_epsilon_transition(right_nfa.start_state)
         return NFA(left_nfa.start_state, right_nfa.accept_state)
-    elif node.value == "or":
+    elif node.value == 'or':
         start = State()
         accept = State()
         left_nfa = build_nfa(node.left)
@@ -103,7 +103,7 @@ def build_nfa(node):
         left_nfa.accept_state.add_epsilon_transition(accept)
         right_nfa.accept_state.add_epsilon_transition(accept)
         return NFA(start, accept)
-    elif node.value == "multiply":
+    elif node.value == 'multiply':
         start = State()
         accept = State()
         sub_nfa = build_nfa(node.left)
@@ -112,7 +112,7 @@ def build_nfa(node):
         sub_nfa.accept_state.add_epsilon_transition(sub_nfa.start_state)
         sub_nfa.accept_state.add_epsilon_transition(accept)
         return NFA(start, accept)
-    elif node.value == "add":
+    elif node.value == 'add':
         start = State()
         accept = State()
         sub_nfa = build_nfa(node.left)
@@ -121,7 +121,7 @@ def build_nfa(node):
         sub_nfa.accept_state.add_epsilon_transition(accept)
         return NFA(start, accept)
 
-    raise ValueError(f"Unexpected node value: {node.value}")
+    raise ValueError(f'Unexpected node value: {node.value}')
 
 
 def adapt_nfa(nfa: NFA):
@@ -131,7 +131,7 @@ def adapt_nfa(nfa: NFA):
     def assign_indices(state):
         nonlocal index
         if state not in state_index:
-            state_index[state] = f"S{index}"
+            state_index[state] = f'S{index}'
             index += 1
             for symbol, states in state.transitions.items():
                 for s in states:
@@ -144,24 +144,24 @@ def adapt_nfa(nfa: NFA):
     initial_state = state_index[nfa.start_state]
     finite_state = state_index[nfa.accept_state]
 
-    machine = {state_index[s]: {"is_finite": name == finite_state, "transitions": {}} for s, name in
+    machine = {state_index[s]: {'is_finite': name == finite_state, 'transitions': {}} for s, name in
                state_index.items()}
 
     for state, name in state_index.items():
         for symbol, states in state.transitions.items():
-            machine[name]["transitions"].setdefault(symbol, set()).update(state_index[s] for s in states)
+            machine[name]['transitions'].setdefault(symbol, set()).update(state_index[s] for s in states)
         for s in state.epsilon_transitions:
-            machine[name]["transitions"].setdefault("ε", set()).add(state_index[s])
+            machine[name]['transitions'].setdefault('ε', set()).add(state_index[s])
 
     symbols = set()
     for state in machine:
-        trans = machine[state]["transitions"]
+        trans = machine[state]['transitions']
         for symbol in trans:
             symbols.add(symbol)
 
     for state in machine:
         for symbol in symbols:
-            machine[state]["transitions"].setdefault(symbol, set())
+            machine[state]['transitions'].setdefault(symbol, set())
 
     return initial_state, finite_state, machine
 

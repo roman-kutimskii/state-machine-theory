@@ -29,7 +29,7 @@ def minimize_moore_machine(states, input_symbols, transitions, outputs, initial_
         for group in partitions:
             subgroup = {}
             for state in group:
-                key = ""
+                key = ''
                 for symbol in input_symbols:
                     for i, s in enumerate(partitions):
                         if transitions[state][symbol] in s:
@@ -50,7 +50,7 @@ def minimize_moore_machine(states, input_symbols, transitions, outputs, initial_
     minimized_outputs = {}
 
     for i, group in enumerate(partitions):
-        new_state = f"S{i}"
+        new_state = f'S{i}'
         for state in group:
             state_map[state] = new_state
         minimized_states.append(new_state)
@@ -61,7 +61,7 @@ def minimize_moore_machine(states, input_symbols, transitions, outputs, initial_
         representative = next(iter(group))
         new_state = state_map[representative]
         minimized_transitions[new_state] = {
-            symbol: state_map[transitions[representative][symbol]] if transitions[representative][symbol] else ""
+            symbol: state_map[transitions[representative][symbol]] if transitions[representative][symbol] else ''
             for symbol in input_symbols
         }
     minimized_initial_state = state_map[initial_state]
