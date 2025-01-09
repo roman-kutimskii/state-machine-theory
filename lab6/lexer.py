@@ -20,7 +20,7 @@ class Lexer:
                 self.buffer += chunk
                 if not any(map(lambda space: space in self.buffer, ' \n\t\r')):
                     self._fill_buffer()
-                if '//' in self.buffer and ';' not in self.buffer:
+                if '//' in self.buffer and '\n' not in self.buffer:
                     self._fill_buffer()
                 if '{' in self.buffer and '}' not in self.buffer:
                     self._fill_buffer()
