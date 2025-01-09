@@ -11,8 +11,8 @@ class TokenType:
 
 
 TOKEN_TYPES = [
-    TokenType('BLOCK_COMMENT', f'{{({SYMBOL}| )*}}'),
-    TokenType('LINE_COMMENT', f'//({SYMBOL}| )*'),
+    TokenType('BLOCK_COMMENT', f'{{({SYMBOL.replace('}|', '')})*}}'),
+    TokenType('LINE_COMMENT', f'//({SYMBOL})*\n'),
     TokenType('ARRAY', '(A|a)(R|r)(R|r)(A|a)(Y|y)'),
     TokenType('BEGIN', '(B|b)(E|e)(G|g)(I|i)(N|n)'),
     TokenType('ELSE', '(E|e)(L|l)(S|s)(E|e)'),
@@ -44,7 +44,7 @@ TOKEN_TYPES = [
     TokenType('ASSIGN', ':='),
     TokenType('COLON', ':'),
     TokenType('DOT', '.'),
-    TokenType('IDENTIFIER', f'({LETTER}|_)({SYMBOL}|_)*'),
+    TokenType('IDENTIFIER', f'({LETTER}|_)({LETTER_OR_DIGIT}|_)*'),
     TokenType('STRING', f'\'{SYMBOL}*\''),
     TokenType('FLOAT', f'{NUMBER}.{DIGIT}+'),
     TokenType('INTEGER', f'{NUMBER}'),
