@@ -20,9 +20,10 @@ class Simulator:
         result = ''
         current_state = initial_state
         for symbol in text:
-            if symbol not in input_symbols:
+            if symbol not in input_symbols and 'ANY' not in input_symbols:
                 return result if outputs[current_state] == 'F' else ''
-            transition = transitions[current_state][symbol]
+            transition = transitions[current_state][symbol] if symbol in input_symbols else transitions[current_state][
+                'ANY']
             if not transition:
                 return result if outputs[current_state] == 'F' else ''
             result += symbol

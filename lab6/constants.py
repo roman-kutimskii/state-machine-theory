@@ -5,4 +5,4 @@ DIGIT_NO_ZERO = '(1|2|3|4|5|6|7|8|9)'
 DIGIT = f'(0|{DIGIT_NO_ZERO})'
 NUMBER = f'({DIGIT}|{DIGIT_NO_ZERO}{DIGIT}*)'
 LETTER_OR_DIGIT = f'({LETTER}|{DIGIT})'
-SYMBOL = f'({'|'.join(f'\\{chr(b)}' if chr(b) in '+*()|' else chr(b) for b in bytes(range(256)))})'
+
