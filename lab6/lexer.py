@@ -18,6 +18,12 @@ class Lexer:
             chunk = self.file.read(1024)
             if chunk:
                 self.buffer += chunk
+                if not any(map(lambda space: space in self.buffer, ' \n\t\r')):
+                    self._fill_buffer()
+                if '//' in self.buffer and ';' not in self.buffer:
+                    self._fill_buffer()
+                if '{' in self.buffer and '}' not in self.buffer:
+                    self._fill_buffer()
             else:
                 self.eof = True
 
