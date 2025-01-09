@@ -3,7 +3,7 @@ import sys
 from lexer import Lexer
 
 
-def main():
+def main() -> int:
     if len(sys.argv) != 3:
         print(f'Usage: python {sys.argv[0]} <input-file> <output-file>')
         return 1

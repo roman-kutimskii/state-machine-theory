@@ -4,5 +4,5 @@ class LexerToken:
         self.value = value
         self.pos = pos
 
-    def __repr__(self):
+    def __str__(self):
         return f'{self.type} {self.pos} "{self.value}"'

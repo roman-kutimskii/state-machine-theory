@@ -3,10 +3,10 @@ from .nfa_to_dfa import process_nfa
 from .minimize import process_dfa
 
 
-def convert_regex_to_dfa(regex):
+def convert_regex_to_dfa(regex: str):
     nfa = process_regex(regex)
     dfa = process_nfa(*nfa)
-    machine = process_dfa(*dfa)
+    machine = process_dfa(dfa)
     return machine
 
 

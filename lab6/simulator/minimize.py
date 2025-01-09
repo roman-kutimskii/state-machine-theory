@@ -1,4 +1,8 @@
-def remove_unreachable_states(states, input_symbols, transitions, outputs, initial_state):
+Machine = tuple[list[str], list[str], dict[str, dict[str, str]], dict[str, str], str]
+
+
+def remove_unreachable_states(machine: Machine) -> Machine:
+    states, input_symbols, transitions, outputs, initial_state = machine
     reachable_states = set()
     to_visit = [initial_state]
 
@@ -16,30 +20,34 @@ def remove_unreachable_states(states, input_symbols, transitions, outputs, initi
     return list(filter(lambda x: x in reachable_states, states)), input_symbols, transitions, outputs, initial_state
 
 
-def minimize_moore_machine(states, input_symbols, transitions, outputs, initial_state):
-    output_groups = {}
+def refine(partitions: list[set[str]], input_symbols: list[str], transitions: dict[str, dict[str, str]]) \
+        -> list[set[str]]:
+    new_partitions: list[set[str]] = []
+    for group in partitions:
+        subgroup = {}
+        for state in group:
+            key = ''
+            for symbol in input_symbols:
+                for i, s in enumerate(partitions):
+                    if transitions[state][symbol] in s:
+                        key += symbol + str(i)
+            subgroup.setdefault(key, set()).add(state)
+        new_partitions.extend(subgroup.values())
+    return new_partitions
+
+
+def minimize_moore_machine(machine: Machine) -> Machine:
+    states, input_symbols, transitions, outputs, initial_state = machine
+
+    output_groups: dict[str, set[str]] = {}
     for state in states:
         output = outputs[state]
         output_groups.setdefault(output, set()).add(state)
 
     partitions = list(output_groups.values())
 
-    def refine(partitions):
-        new_partitions = []
-        for group in partitions:
-            subgroup = {}
-            for state in group:
-                key = ''
-                for symbol in input_symbols:
-                    for i, s in enumerate(partitions):
-                        if transitions[state][symbol] in s:
-                            key += symbol + str(i)
-                subgroup.setdefault(key, set()).add(state)
-            new_partitions.extend(subgroup.values())
-        return new_partitions
-
     while True:
-        new_partitions = refine(partitions)
+        new_partitions = refine(partitions, input_symbols, transitions)
         if new_partitions == partitions:
             break
         partitions = new_partitions
@@ -69,6 +77,5 @@ def minimize_moore_machine(states, input_symbols, transitions, outputs, initial_
     return minimized_states, input_symbols, minimized_transitions, minimized_outputs, minimized_initial_state
 
 
-def process_dfa(states, input_symbols, transitions, outputs, initial_state):
-    return minimize_moore_machine(
-        *remove_unreachable_states(states, input_symbols, transitions, outputs, initial_state))
+def process_dfa(machine: Machine) -> Machine:
+    return minimize_moore_machine(remove_unreachable_states(machine))
