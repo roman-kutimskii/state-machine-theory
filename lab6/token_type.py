@@ -9,7 +9,7 @@ class TokenType:
     def __str__(self):
         return self.name
 
-
+# TODO: Сделать не {SPACE}, а что-то типа "не буква"
 TOKEN_TYPES = [
     TokenType('BLOCK_COMMENT', f'{{.*}}'),
     TokenType('LINE_COMMENT', f'//.*\n'),
