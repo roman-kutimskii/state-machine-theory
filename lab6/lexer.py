@@ -37,7 +37,9 @@ class Lexer:
                 simulator = SIMULATORS_MAP.get(token_type.name)
                 result = simulator.run(self.buffer)
                 if result:
-                    if token_type.name == "LINE_COMMENT":
+                    if token_type.name in (
+                    'LINE_COMMENT', 'ARRAY', 'BEGIN', 'ELSE', 'END', 'IF', 'OF', 'OR', 'PROGRAM', 'PROCEDURE', 'THEN',
+                    'TYPE', 'VAR'):
                         result = result[:-1]
                     token = LexerToken(token_type.name, result, (self.line, self.column))
                     self._update_position(result)
