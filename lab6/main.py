@@ -19,7 +19,7 @@ def main() -> int:
             token = lexer.next_token()
             if token is None:
                 break
-            if token.type != 'SPACE':
+            if token.type not in ('SPACE', 'LINE_COMMENT', 'BLOCK_COMMENT'):
                 print(token) if debug else None
                 output.write(str(token) + '\n')
 
