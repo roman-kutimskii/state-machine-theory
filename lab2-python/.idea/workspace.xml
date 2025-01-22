@@ -6,8 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="e44c29cd-e07b-4fac-a42e-49c3a1748f4f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab6/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lab6/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab6/simulator/simulator.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lab6/simulator/simulator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lab6/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lab6/constants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lab6/simulator/regex_to_nfa.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lab6/simulator/regex_to_nfa.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../lab6/token_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/../lab6/token_type.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -141,7 +141,7 @@
       <workItem from="1736233828271" duration="110000" />
       <workItem from="1736243827577" duration="902000" />
       <workItem from="1737471337239" duration="1691000" />
-      <workItem from="1737547779732" duration="609000" />
+      <workItem from="1737547779732" duration="1264000" />
     </task>
     <servers />
   </component>

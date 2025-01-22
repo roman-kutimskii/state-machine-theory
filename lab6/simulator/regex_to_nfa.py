@@ -29,7 +29,7 @@ class NFA:
 
 
 def is_literal(value: str) -> bool:
-    return value not in '+*()|.'
+    return value not in '+*()|.^'
 
 
 def parse_regex(expression: str) -> RegexNode:
@@ -49,6 +49,9 @@ def parse_regex(expression: str) -> RegexNode:
                 return RegexNode(token)
             elif token == '.':
                 return RegexNode('any')
+            elif token == '^':
+                negated_node = parse_primary()
+                return RegexNode('not', left=negated_node)
             elif token == '(':
                 node = parse_expression()
                 if get_next() != ')':
@@ -65,7 +68,7 @@ def parse_regex(expression: str) -> RegexNode:
 
         def parse_term() -> RegexNode:
             node = parse_factor()
-            while tokens and tokens[0] and (is_literal(tokens[0]) or tokens[0] == '(' or tokens[0] == '.'):
+            while tokens and tokens[0] and (is_literal(tokens[0]) or tokens[0] in ('(', '.', '^')):
                 right = parse_factor()
                 node = RegexNode('concat', left=node, right=right)
             return node
@@ -87,7 +90,7 @@ def build_nfa(node: RegexNode) -> NFA | None:
     if node is None:
         return None
 
-    if node.value not in ('concat', 'or', 'add', 'multiply', 'any'):
+    if node.value not in ('concat', 'or', 'add', 'multiply', 'any', 'not'):
         start = State()
         accept = State()
         start.add_transition(node.value, accept)
@@ -95,6 +98,14 @@ def build_nfa(node: RegexNode) -> NFA | None:
     elif node.value == 'any':
         start = State()
         accept = State()
+        start.add_transition('ANY', accept)
+        return NFA(start, accept)
+    elif node.value == 'not':
+        sub_nfa = build_nfa(node.left)
+        start = State()
+        accept = State()
+        start.add_epsilon_transition(sub_nfa.start_state)
+        sub_nfa.accept_state.add_transition('NOT', accept)
         start.add_transition('ANY', accept)
         return NFA(start, accept)
     elif node.value == 'concat':
