@@ -48,7 +48,7 @@ class Lexer:
                     if token_name == "IDENTIFIER":
                         if len(result) > 256:
                             token_name = "BAD"
-                    if token_name in ('BAD_IDENTIFIER', 'BAD_STRING'):
+                    if token_name in ('BAD_IDENTIFIER', 'BAD_STRING', 'BAD_BLOCK_COMMENT'):
                         token_name = "BAD"
                     token = LexerToken(token_name, result, (self.line, self.column))
                     self._update_position(result)
