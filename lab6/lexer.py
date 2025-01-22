@@ -34,14 +34,21 @@ class Lexer:
                 return None
 
             for token_type in TOKEN_TYPES:
+                token_name = token_type.name
                 simulator = SIMULATORS_MAP.get(token_type.name)
                 result = simulator.run(self.buffer)
                 if result:
-                    if token_type.name in (
+                    if token_name in (
                     'LINE_COMMENT', 'ARRAY', 'BEGIN', 'ELSE', 'END', 'IF', 'OF', 'OR', 'PROGRAM', 'PROCEDURE', 'THEN',
                     'TYPE', 'VAR', 'IDENTIFIER', 'INTEGER'):
                         result = result[:-1]
-                    token = LexerToken(token_type.name, result, (self.line, self.column))
+                    if token_name == "INTEGER":
+                        if len(result) > 16:
+                            token_name = "BAD"
+                    if token_name == "IDENTIFIER":
+                        if len(result) > 256:
+                            token_name = "BAD"
+                    token = LexerToken(token_name, result, (self.line, self.column))
                     self._update_position(result)
                     return token
 
