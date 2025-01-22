@@ -26,7 +26,6 @@ class Lexer:
                     self._fill_buffer()
             else:
                 self.eof = True
-                self.buffer = self.buffer + ' '
 
     def next_token(self) -> LexerToken | None:
         while not self.eof or self.buffer:
@@ -41,7 +40,7 @@ class Lexer:
                 if result:
                     if token_name in (
                     'LINE_COMMENT', 'ARRAY', 'BEGIN', 'ELSE', 'END', 'IF', 'OF', 'OR', 'PROGRAM', 'PROCEDURE', 'THEN',
-                    'TYPE', 'VAR', 'IDENTIFIER', 'INTEGER', 'BAD'):
+                    'TYPE', 'VAR', 'IDENTIFIER', 'BAD'):
                         result = result[:-1]
                     if token_name == "INTEGER":
                         if len(result) > 16:
