@@ -40,7 +40,7 @@ class Lexer:
                 if result:
                     if token_name in (
                     'LINE_COMMENT', 'ARRAY', 'BEGIN', 'ELSE', 'END', 'IF', 'OF', 'OR', 'PROGRAM', 'PROCEDURE', 'THEN',
-                    'TYPE', 'VAR', 'IDENTIFIER', 'BAD'):
+                    'TYPE', 'VAR'):
                         result = result[:-1]
                     if token_name == "INTEGER":
                         if len(result) > 16:
