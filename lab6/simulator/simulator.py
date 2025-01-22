@@ -22,9 +22,10 @@ class Simulator:
         for symbol in text:
             if symbol not in input_symbols and 'ANY' not in input_symbols:
                 return result if outputs[current_state] == 'F' else ''
-            transition = transitions[current_state][symbol] if symbol in input_symbols else transitions[current_state][
-                'ANY']
-            if not transition:
+            transition = transitions[current_state].get(symbol, '')
+            if transition == '':
+                transition = transitions[current_state].get('ANY', '')
+            if transition == '':
                 return result if outputs[current_state] == 'F' else ''
             result += symbol
             current_state = transition
