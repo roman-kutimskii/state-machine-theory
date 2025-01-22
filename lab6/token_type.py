@@ -48,5 +48,6 @@ TOKEN_TYPES = [
     TokenType('FLOAT', f'{NUMBER}({EXPONENT}|(\\.{DIGIT}+({EXPONENT}|ε)))'),
     TokenType('INTEGER', f'{NUMBER}{DIVIDER}'),
     TokenType('SPACE', SPACE),
-    TokenType('BAD', f'({NUMBER}|^{LETTER})(({LETTER}|_)({LETTER_OR_DIGIT}|_)*{DIVIDER})')
+    TokenType('BAD_STRING', f'\'.*'),
+    TokenType('BAD_IDENTIFIER', f'({NUMBER}|^{LETTER})(({LETTER}|_)({LETTER_OR_DIGIT}|_)*{DIVIDER})'),
 ]
