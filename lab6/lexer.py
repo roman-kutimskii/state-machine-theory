@@ -48,8 +48,9 @@ class Lexer:
                         if len(result) > 16:
                             token_name = "BAD"
                     if token_name == "IDENTIFIER":
-                        if (self.prev not in ' \n\t\r"()+-;:,.[]{}*/\'\xa0<>='
-                                or self.buffer[len(result)] not in ' \n\t\r"()+-;:,.[]{}*/\'\xa0<>='):
+                        if (self.prev not in ' \n\t\r"()+-;:,.[]{}*/\'\xa0<>=' or (
+                                len(self.buffer) > len(result) and self.buffer[
+                            len(result)] not in ' \n\t\r"()+-;:,.[]{}*/\'\xa0<>=')):
                             token_name = "BAD"
                         if len(result) > 256:
                             token_name = "BAD"
