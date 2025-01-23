@@ -12,6 +12,7 @@ class Lexer:
         self.line = 1
         self.column = 1
         self.eof = False
+        self.prev = ''
 
     def _fill_buffer(self) -> None:
         if not self.eof:
@@ -39,16 +40,20 @@ class Lexer:
                 result = simulator.run(self.buffer)
                 if result:
                     if token_name in (
-                    'LINE_COMMENT', 'ARRAY', 'BEGIN', 'ELSE', 'END', 'IF', 'OF', 'OR', 'PROGRAM', 'PROCEDURE', 'THEN',
-                    'TYPE', 'VAR'):
+                            'LINE_COMMENT', 'ARRAY', 'BEGIN', 'ELSE', 'END', 'IF', 'OF', 'OR', 'PROGRAM', 'PROCEDURE',
+                            'THEN',
+                            'TYPE', 'VAR'):
                         result = result[:-1]
                     if token_name == "INTEGER":
                         if len(result) > 16:
                             token_name = "BAD"
                     if token_name == "IDENTIFIER":
+                        if (self.prev not in ' \n\t\r"()+-;:,.[]{}*/\'\xa0<>='
+                                or self.buffer[len(result)] not in ' \n\t\r"()+-;:,.[]{}*/\'\xa0<>='):
+                            token_name = "BAD"
                         if len(result) > 256:
                             token_name = "BAD"
-                    if token_name in ('BAD_IDENTIFIER', 'BAD_STRING', 'BAD_BLOCK_COMMENT'):
+                    if 'BAD_' in token_name:
                         token_name = "BAD"
                     token = LexerToken(token_name, result, (self.line, self.column))
                     self._update_position(result)
@@ -62,6 +67,7 @@ class Lexer:
         return None
 
     def _update_position(self, result: str) -> None:
+        self.prev = result[-1]
         self.buffer = self.buffer[len(result):]
         self.column += len(result)
         if '\n' in result:
