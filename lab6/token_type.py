@@ -45,7 +45,7 @@ TOKEN_TYPES = [
     TokenType('DOT', '\\.'),
     TokenType('IDENTIFIER', f'({LETTER}|_)({LETTER_OR_DIGIT}|_)*'),
     TokenType('STRING', f'\'.*\''),
-    TokenType('FLOAT', f'{NUMBER}({EXPONENT}|(\\.{DIGIT}+({EXPONENT}|ε)))'),
+    TokenType('FLOAT', f'{DIGIT}*({EXPONENT}|(\\.{DIGIT}+({EXPONENT}|ε)))'),
     TokenType('INTEGER', f'{NUMBER}'),
     TokenType('SPACE', SPACE),
     TokenType('BAD_STRING', f'\'.*'),
