@@ -49,5 +49,6 @@ TOKEN_TYPES = [
     TokenType('INTEGER', f'{NUMBER}'),
     TokenType('SPACE', SPACE),
     TokenType('BAD_STRING', f'\'.*'),
-    TokenType('BAD_BLOCK_COMMENT', f'{{.*')
+    TokenType('BAD_BLOCK_COMMENT', f'{{.*'),
+    TokenType('BAD', '.*')
 ]

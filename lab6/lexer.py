@@ -65,10 +65,7 @@ class Lexer:
                     self._update_position(result)
                     return token
 
-            bad_char = self.buffer[0]
-            self.buffer = self.buffer[1:]
-            self.column += 1
-            return LexerToken('BAD', bad_char, (self.line, self.column - 1))
+            return None
 
         return None
 
