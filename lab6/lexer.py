@@ -44,23 +44,21 @@ class Lexer:
                 simulator = SIMULATORS_MAP.get(token_type.name)
                 result = simulator.run(self.buffer)
                 if result:
-                    if token_name in (
-                            'LINE_COMMENT', 'ARRAY', 'BEGIN', 'ELSE', 'END', 'IF', 'OF', 'OR', 'PROGRAM', 'PROCEDURE',
-                            'THEN',
-                            'TYPE', 'VAR'):
+                    if token_name == 'LINE_COMMENT':
                         result = result[:-1]
-                    if token_name == "INTEGER":
+                    if token_name in (
+                            'ARRAY', 'BEGIN', 'ELSE', 'END', 'IF', 'OF', 'OR', 'PROGRAM', 'PROCEDURE', 'THEN',
+                            'TYPE', 'VAR', 'INTEGER', 'IDENTIFIER'):
                         if self._is_not_wrapped(result):
-                            token_name = "BAD"
+                            token_name = 'BAD'
+                    if token_name == 'INTEGER':
                         if len(result) > 16:
-                            token_name = "BAD"
-                    if token_name == "IDENTIFIER":
-                        if self._is_not_wrapped(result):
-                            token_name = "BAD"
+                            token_name = 'BAD'
+                    if token_name == 'IDENTIFIER':
                         if len(result) > 256:
-                            token_name = "BAD"
+                            token_name = 'BAD'
                     if 'BAD_' in token_name:
-                        token_name = "BAD"
+                        token_name = 'BAD'
                     token = LexerToken(token_name, result, (self.line, self.column))
                     self._update_position(result)
                     return token
